@@ -15,21 +15,25 @@ class Donation {
     required this.notes,
   });
 
-  factory Donation.fromJson(Map<String, dynamic> json) => Donation(
-        id: json['id'],
-        donorId: json['donor']['id'],
-        date: json['date'],
-        hospital: json['hospital'],
-        units: json['units'],
-        notes: json['notes'] ?? '',
-      );
+  factory Donation.fromJson(Map<String, dynamic> json) {
+    return Donation(
+      id: json['id'],
+      donorId: json['donor']['id'],
+      date: json['date'],
+      hospital: json['hospital'],
+      units: json['units'],
+      notes: json['notes'] ?? '',
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'date': date,
-        'hospital': hospital,
-        'units': units,
-        'notes': notes,
-        'donor': {'id': donorId}
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'date': date,
+      'hospital': hospital,
+      'units': units,
+      'notes': notes,
+      'donor': {'id': donorId}
+    };
+  }
 }

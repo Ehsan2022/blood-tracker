@@ -23,7 +23,7 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
   }
 
   void _loadDonations() {
-    donations = ApiService.fetchDonationsByDonor(widget.donor.id!);
+    donations = ApiService.fetchDonors() as Future<List<Donation>>;
   }
 
   void _refresh() {
@@ -63,7 +63,7 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
                           trailing: IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () async {
-                              await ApiService.deleteDonation(d.id!);
+                              await ApiService.deleteDonor(d.id!);
                               _refresh();
                             },
                           ),

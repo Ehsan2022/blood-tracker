@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/donor.dart';
 import '../services/api_service.dart';
+// Make sure that the file '../services/api_service.dart' actually defines 'ApiService' class with static methods 'createDonor' and 'updateDonor'.
 
 class DonorFormScreen extends StatefulWidget {
   final Donor? donor;
@@ -40,10 +41,11 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
         city: city,
         lastDonation: lastDonation,
       );
-      if (widget.donor == null)
+      if (widget.donor == null) {
         await ApiService.createDonor(donor);
-      else
+      } else {
         await ApiService.updateDonor(donor);
+      }
       Navigator.pop(context);
     }
   }

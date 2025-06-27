@@ -29,23 +29,24 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
   }
 
   void save() async {
-    if (_formKey.currentState!.validate()) {
-      final donation = Donation(
-        id: widget.donation?.id,
-        donorId: widget.donorId,
-        date: date,
-        hospital: hospital,
-        units: units,
-        notes: notes,
-      );
-      if (widget.donation == null) {
-        await ApiService.createDonation(widget.donorId as Donation, donation);
-      } else {
-        await ApiService.updateDonation(widget.donorId as Donation, donation);
-      }
-      Navigator.pop(context, true);
+  if (_formKey.currentState!.validate()) {
+    final donation = Donation(
+      id: widget.donation?.id,
+      donorId: widget.donorId,
+      date: date,
+      hospital: hospital,
+      units: units,
+      notes: notes,
+    );
+    if (widget.donation == null) {
+      await ApiService.createDonate(donation);
+    } else {
+      await ApiService.updateDonate(donation);
     }
+    Navigator.pop(context, true);
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

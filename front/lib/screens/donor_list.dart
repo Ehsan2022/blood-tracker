@@ -12,17 +12,18 @@ class DonorListScreen extends StatefulWidget {
 class _DonorListScreenState extends State<DonorListScreen> {
   late Future<List<Donor>> donors;
 
-  @override
-  void initState() {
-    super.initState();
-    donors = ApiService.fetchDonors();
-  }
+ @override
+void initState() {
+  super.initState();
+  donors = ApiService.fetchDonors(); // No arguments required
+}
 
-  void refresh() {
-    setState(() {
-      donors = ApiService.fetchDonors();
-    });
-  }
+void refresh() {
+  setState(() {
+    donors = ApiService.fetchDonors(); // No arguments required
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
