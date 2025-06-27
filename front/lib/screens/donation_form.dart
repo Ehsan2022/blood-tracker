@@ -1,4 +1,4 @@
-import 'package:class_project/services/api_service.dart' as ApiService;
+import 'package:class_project/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../models/donation.dart';
 import '../services/api_service.dart';
@@ -39,9 +39,9 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
       notes: notes,
     );
     if (widget.donation == null) {
-      await ApiService.createDonate(donation);
+      await ApiService.createDonation(donation);
     } else {
-      await ApiService.updateDonate(donation);
+      await ApiService.updateDonation(donation);
     }
     Navigator.pop(context, true);
   }
