@@ -22,7 +22,7 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
   DateTime? _lastDonation;
 
   final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-  final List<String> _genders = ['Male', 'Female', 'Other'];
+  final List<String> _genders = ['Male', 'Female'];
 
   @override
   void initState() {

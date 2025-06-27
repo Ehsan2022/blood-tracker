@@ -1,9 +1,9 @@
-import 'package:class_project/screens/donor_detail.dart';
-import 'package:class_project/screens/donor_form.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import '../models/donor.dart';
 import '../services/api_service.dart';
+import 'donor_detail.dart';
+import 'donor_form.dart';
 
 class DonorListScreen extends StatefulWidget {
   const DonorListScreen({super.key});
@@ -14,8 +14,9 @@ class DonorListScreen extends StatefulWidget {
 
 class _DonorListScreenState extends State<DonorListScreen> {
   late Future<List<Donor>> _donorsFuture;
-  final TextEditingController _searchController = TextEditingController();
+  List<Donor> _allDonors = [];
   List<Donor> _filteredDonors = [];
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
   Future<void> _loadDonors() async {
     setState(() {
       _donorsFuture = ApiService.fetchDonors().then((donors) {
+        _allDonors = donors;
         _filteredDonors = donors;
         return donors;
       });
@@ -35,19 +37,52 @@ class _DonorListScreenState extends State<DonorListScreen> {
 
   void _filterDonors() {
     final query = _searchController.text.toLowerCase();
-    _donorsFuture.then((donors) {
-      setState(() {
-        _filteredDonors = donors.where((donor) {
-          return donor.name.toLowerCase().contains(query) ||
-              (donor.bloodGroup?.toLowerCase().contains(query) ?? false) ||
-              (donor.city?.toLowerCase().contains(query) ?? false);
-        }).toList();
-      });
+    setState(() {
+      _filteredDonors = _allDonors.where((donor) {
+        return donor.name.toLowerCase().contains(query) ||
+            (donor.bloodGroup?.toLowerCase().contains(query) ?? false) ||
+            (donor.city?.toLowerCase().contains(query) ?? false);
+      }).toList();
     });
   }
 
   Future<void> _handleRefresh() async {
     await _loadDonors();
+  }
+
+  Future<void> _navigateToDetail(Donor donor) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DonorDetailScreen(donor: donor),
+      ),
+    );
+    
+    if (result == true) {
+      await _loadDonors();
+    }
+  }
+
+  Future<void> _deleteDonor(int id) async {
+    try {
+      await ApiService.deleteDonor(id);
+      if (!mounted) return;
+      await _loadDonors();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Donor deleted successfully'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
@@ -73,6 +108,20 @@ class _DonorListScreenState extends State<DonorListScreen> {
           ),
         ),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DonorFormScreen(),
+                ),
+              );
+              await _loadDonors();
+            },
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -198,27 +247,14 @@ class _DonorListScreenState extends State<DonorListScreen> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.chevron_right, color: Colors.grey.shade600),
-                onPressed: () => _navigateToDetail(donor),
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _deleteDonor(donor.id ?? 0),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Future<void> _navigateToDetail(Donor donor) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => DonorDetailScreen(donor: donor),
-      ),
-    );
-    
-    if (result == true && mounted) {
-      await _loadDonors();
-    }
   }
 
   Widget _buildErrorState() {
@@ -274,15 +310,14 @@ class _DonorListScreenState extends State<DonorListScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DonorFormScreen(),
+                  builder: (context) => const DonorFormScreen(),
                 ),
-              ).then((_) {
-                if (mounted) _loadDonors();
-              });
+              );
+              await _loadDonors();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade700,
