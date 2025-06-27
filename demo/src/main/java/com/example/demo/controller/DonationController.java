@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,34 +14,50 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Donation;
+import com.example.demo.model.Donor;
 import com.example.demo.repository.DonationRepository;
-
+import com.example.demo.repository.DonorRepository;
 
 @RestController
 @RequestMapping("/api/donations")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class DonationController {
 
-    @Autowired private DonationRepository repo;
+    private final DonationRepository donationRepository;
+    private final DonorRepository donorRepository;
+
+    public DonationController(DonationRepository donationRepository, DonorRepository donorRepository) {
+        this.donationRepository = donationRepository;
+        this.donorRepository = donorRepository;
+    }
 
     @GetMapping("/donor/{donorId}")
-    public List<Donation> getByDonor(@PathVariable Long donorId) {
-        return repo.findByDonorId(donorId);
+    public ResponseEntity<List<Donation>> getByDonor(@PathVariable Long donorId) {
+        return ResponseEntity.ok(donationRepository.findByDonorId(donorId));
     }
 
     @PostMapping
-    public Donation create(@RequestBody Donation donation) {
-        return repo.save(donation);
+    public ResponseEntity<Donation> create(@RequestBody Donation donation) {
+        Donor donor = donorRepository.findById(donation.getDonor().getId())
+                .orElseThrow(() -> new RuntimeException("Donor not found"));
+        donation.setDonor(donor);
+        return ResponseEntity.ok(donationRepository.save(donation));
     }
 
     @PutMapping("/{id}")
-    public Donation update(@PathVariable Long id, @RequestBody Donation donation) {
-        donation.setId(id);
-        return repo.save(donation);
+    public ResponseEntity<Donation> update(@PathVariable Long id, @RequestBody Donation updatedDonation) {
+        Donation existing = donationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Donation not found"));
+        existing.setDate(updatedDonation.getDate());
+        existing.setHospital(updatedDonation.getHospital());
+        existing.setUnits(updatedDonation.getUnits());
+        existing.setNotes(updatedDonation.getNotes());
+        return ResponseEntity.ok(donationRepository.save(existing));
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        repo.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        donationRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
