@@ -36,4 +36,5 @@ public class Donation {
     @JoinColumn(name = "donor_id")
     @JsonBackReference
     private Donor donor;
+    
 }

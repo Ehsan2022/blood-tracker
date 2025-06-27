@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +22,20 @@ import com.example.demo.repository.DonorRepository;
 @CrossOrigin
 public class DonorController {
 
-    @Autowired private DonorRepository repo;
+    @Autowired 
+    private DonorRepository repo;
 
-    @GetMapping public List<Donor> getAll() { return repo.findAll(); }
+    @GetMapping
+    public List<Donor> getAllDonors() {
+        return repo.findAll();
+    }
 
-    @PostMapping public Donor create(@RequestBody Donor donor) {
-        return repo.save(donor);
+    @PostMapping
+    public ResponseEntity<Donor> create(@RequestBody Donor donor) {
+            System.out.println("Received donor: " + donor.toString()); // Debug log
+            Donor savedDonor = repo.save(donor);
+            return ResponseEntity.ok(savedDonor);
+
     }
 
     @PutMapping("/{id}")

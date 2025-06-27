@@ -1,13 +1,12 @@
 import 'package:class_project/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../models/donation.dart';
-import '../services/api_service.dart';
 
 class DonationFormScreen extends StatefulWidget {
   final int donorId;
   final Donation? donation;
 
-  const DonationFormScreen({required this.donorId, this.donation});
+  const DonationFormScreen({super.key, required this.donorId, this.donation});
 
   @override
   State<DonationFormScreen> createState() => _DonationFormScreenState();
@@ -43,6 +42,7 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
     } else {
       await ApiService.updateDonation(donation);
     }
+    // ignore: use_build_context_synchronously
     Navigator.pop(context, true);
   }
 }
@@ -63,7 +63,7 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
               TextFormField(initialValue: units.toString(), decoration: InputDecoration(labelText: 'Units'), keyboardType: TextInputType.number, onChanged: (v) => units = int.parse(v)),
               TextFormField(initialValue: notes, decoration: InputDecoration(labelText: 'Notes'), onChanged: (v) => notes = v),
               SizedBox(height: 20),
-              ElevatedButton(child: Text('Save'), onPressed: save),
+              ElevatedButton(onPressed: save, child: Text('Save')),
             ],
           ),
         ),
