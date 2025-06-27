@@ -1,4 +1,3 @@
-import 'package:class_project/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../models/donor.dart';
 import '../services/api_service.dart';
@@ -34,38 +33,24 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
     _selectedBloodGroup = widget.donor?.bloodGroup ?? _bloodGroups.first;
     _phoneController = TextEditingController(text: widget.donor?.phone ?? '');
     _cityController = TextEditingController(text: widget.donor?.city ?? '');
-    
-    if (widget.donor?.lastDonation != null) {
-      if (widget.donor!.lastDonation is String) {
-        _lastDonation = DateTime.tryParse(widget.donor!.lastDonation as String);
-      } else {
-        _lastDonation = widget.donor!.lastDonation as DateTime?;
-      }
-    }
+    _lastDonation = widget.donor?.lastDonation;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.donor == null ? 'Add New Donor' : 'Edit Donor',
-          style: const TextStyle(color: Colors.white),
-        ),
+        title: Text(widget.donor == null ? 'Add New Donor' : 'Edit Donor'),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Colors.red.shade900,
-                Colors.red.shade700,
-              ],
+              colors: [Colors.red.shade900, Colors.red.shade700],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -73,144 +58,164 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
           key: _formKey,
           child: Column(
             children: [
-              ModernCard(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Full Name*',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter donor name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _ageController,
-                      decoration: const InputDecoration(
-                        labelText: 'Age*',
-                        prefixIcon: Icon(Icons.cake),
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter age';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        final age = int.parse(value);
-                        if (age < 18 || age > 100) {
-                          return 'Age must be between 18-100';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      value: _selectedGender,
-                      decoration: const InputDecoration(
-                        labelText: 'Gender*',
-                        prefixIcon: Icon(Icons.transgender),
-                        border: OutlineInputBorder(),
-                      ),
-                      items: _genders.map((gender) {
-                        return DropdownMenuItem(
-                          value: gender,
-                          child: Text(gender),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedGender = value;
-                          });
-                        }
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select gender';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      value: _selectedBloodGroup,
-                      decoration: const InputDecoration(
-                        labelText: 'Blood Group*',
-                        prefixIcon: Icon(Icons.bloodtype),
-                        border: OutlineInputBorder(),
-                      ),
-                      items: _bloodGroups.map((group) {
-                        return DropdownMenuItem(
-                          value: group,
-                          child: Text(group),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedBloodGroup = value;
-                          });
-                        }
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select blood group';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _phoneController,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        prefixIcon: Icon(Icons.phone),
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.phone,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _cityController,
-                      decoration: const InputDecoration(
-                        labelText: 'City',
-                        prefixIcon: Icon(Icons.location_city),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    InkWell(
-                      onTap: () => _selectDate(context),
-                      child: InputDecorator(
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
                         decoration: const InputDecoration(
-                          labelText: 'Last Donation Date',
-                          prefixIcon: Icon(Icons.calendar_today),
+                          labelText: 'Full Name*',
+                          prefixIcon: Icon(Icons.person),
                           border: OutlineInputBorder(),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _lastDonation != null
-                                  ? '${_lastDonation!.day}/${_lastDonation!.month}/${_lastDonation!.year}'
-                                  : 'Select date',
-                            ),
-                            const Icon(Icons.calendar_month),
-                          ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter donor name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _ageController,
+                        decoration: const InputDecoration(
+                          labelText: 'Age*',
+                          prefixIcon: Icon(Icons.cake),
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter age';
+                          }
+                          if (int.tryParse(value) == null) {
+                            return 'Please enter a valid number';
+                          }
+                          final age = int.parse(value);
+                          if (age < 18 || age > 100) {
+                            return 'Age must be between 18-100';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: _selectedGender,
+                        decoration: const InputDecoration(
+                          labelText: 'Gender*',
+                          prefixIcon: Icon(Icons.transgender),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _genders.map((gender) {
+                          return DropdownMenuItem(
+                            value: gender,
+                            child: Text(gender),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedGender = value;
+                            });
+                          }
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select gender';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: _selectedBloodGroup,
+                        decoration: const InputDecoration(
+                          labelText: 'Blood Group*',
+                          prefixIcon: Icon(Icons.bloodtype),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _bloodGroups.map((group) {
+                          return DropdownMenuItem(
+                            value: group,
+                            child: Text(group),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedBloodGroup = value;
+                            });
+                          }
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select blood group';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone Number',
+                          prefixIcon: Icon(Icons.phone),
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _cityController,
+                        decoration: const InputDecoration(
+                          labelText: 'City',
+                          prefixIcon: Icon(Icons.location_city),
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      InkWell(
+                        onTap: () => _selectDate(context),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            labelText: 'Last Donation Date',
+                            prefixIcon: Icon(Icons.calendar_today),
+                            border: OutlineInputBorder(),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _lastDonation != null
+                                    ? '${_lastDonation!.day}/${_lastDonation!.month}/${_lastDonation!.year}'
+                                    : 'Select date',
+                              ),
+                              const Icon(Icons.calendar_month),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -225,8 +230,10 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                     ),
                   ),
                   onPressed: _submitForm,
-                  child: const Text('Save Donor', 
-                    style: TextStyle(fontSize: 16, color: Colors.white)),
+                  child: const Text(
+                    'Save Donor',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
               ),
             ],
