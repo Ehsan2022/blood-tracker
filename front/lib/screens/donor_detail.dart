@@ -1,10 +1,9 @@
-import 'package:class_project/app_theme.dart';
+import 'package:class_project/screens/donor_form.dart';
 import 'package:flutter/material.dart';
 import '../models/donor.dart';
 import '../models/donation.dart';
 import '../services/api_service.dart';
 import 'donation_form.dart';
-import 'donor_form.dart';
 
 class DonorDetailScreen extends StatefulWidget {
   final Donor donor;
@@ -17,7 +16,7 @@ class DonorDetailScreen extends StatefulWidget {
 
 class _DonorDetailScreenState extends State<DonorDetailScreen> {
   late Future<List<Donation>> _donationsFuture;
-  bool _isLoading = false;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey();
 
   @override
   void initState() {
@@ -26,12 +25,13 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
   }
 
   Future<void> _loadDonations() async {
-    setState(() => _isLoading = true);
-    try {
+    setState(() {
       _donationsFuture = ApiService.fetchDonationsByDonor(widget.donor.id ?? 0);
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    });
+  }
+
+  Future<void> _handleRefresh() async {
+    await _loadDonations();
   }
 
   Future<void> _deleteDonation(int id) async {
@@ -41,21 +41,21 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Donation deleted successfully')),
       );
-      _loadDonations();
+      await _loadDonations();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting donation: $e')),
+        SnackBar(content: Text('Error: ${e.toString()}')),
       );
     }
   }
 
-  Future<void> _deleteDonor(BuildContext context) async {
+  Future<void> _deleteDonor() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirm Delete'),
-        content: const Text('Are you sure you want to delete this donor?'),
+        content: const Text('Delete this donor permanently?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -77,98 +77,250 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting donor: $e')),
+          SnackBar(content: Text('Error: ${e.toString()}')),
         );
       }
     }
   }
 
-  Future<void> _editDonor(BuildContext context) async {
+  Future<void> _editDonor() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => DonorFormScreen(donor: widget.donor),
+        builder: (context) => DonorFormScreen(donor: widget.donor),
       ),
     );
     
     if (result != null && mounted) {
-      _loadDonations();
+      await _loadDonations();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final donor = widget.donor;
     return Scaffold(
       appBar: AppBar(
-        title: Text(donor.name, style: const TextStyle(color: Colors.white)),
+        title: Text(widget.donor.name),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Colors.red.shade900,
-                Colors.red.shade700,
-              ],
+              colors: [Colors.red.shade900, Colors.red.shade700],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _editDonor(context),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _deleteDonor(context),
-          ),
-        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            ModernCard(
-              child: Column(
-                children: [
-                  _buildInfoRow(Icons.person, donor.name),
-                  _buildInfoRow(Icons.cake, '${donor.age} years'),
-                  _buildInfoRow(Icons.transgender, donor.gender ?? 'Unknown'),
-                  _buildInfoRow(Icons.bloodtype, donor.bloodGroup ?? 'Unknown'),
-                  _buildInfoRow(Icons.phone, donor.phone ?? 'Not provided'),
-                  _buildInfoRow(Icons.location_city, donor.city ?? 'Unknown'),
-                  _buildInfoRow(Icons.calendar_today, 
-                    donor.lastDonation?.toString() ?? 'Never donated'),
-                ],
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _handleRefresh,
+        color: Colors.red.shade700,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: _buildDonorCard(),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 16),
+              sliver: SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Donation History',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            Text('Donation History', style: AppTextStyles.headlineMedium),
-            const SizedBox(height: 8),
-            Expanded(
-              child: _buildDonationList(),
-            ),
+            _buildDonationList(),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red.shade700,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
         onPressed: () async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DonationFormScreen(donorId: donor.id ?? 0),
+              builder: (context) => DonationFormScreen(donorId: widget.donor.id ?? 0),
             ),
           );
-          _loadDonations();
+          await _loadDonations();
+        },
+      ),
+    );
+  }
+
+  Widget _buildDonorCard() {
+    final donor = widget.donor;
+    return Card(
+      margin: const EdgeInsets.all(16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.red.shade50,
+                  child: Text(
+                    donor.bloodGroup ?? '?',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red.shade700,
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: _editDonor,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: _deleteDonor,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildInfoRow(Icons.person, donor.name),
+            _buildInfoRow(Icons.cake, '${donor.age} years'),
+            _buildInfoRow(Icons.transgender, donor.gender ?? 'Unknown'),
+            _buildInfoRow(Icons.bloodtype, donor.bloodGroup ?? 'Unknown'),
+            if (donor.phone != null) _buildInfoRow(Icons.phone, donor.phone!),
+            if (donor.city != null) _buildInfoRow(Icons.location_city, donor.city!),
+            _buildInfoRow(
+              Icons.calendar_today,
+              donor.lastDonation != null 
+                  ? 'Last donated: ${donor.lastDonation!.toLocal().toString().split(' ')[0]}'
+                  : 'Never donated',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDonationList() {
+    return FutureBuilder<List<Donation>>(
+      future: _donationsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SliverFillRemaining(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        
+        if (snapshot.hasError) {
+          return SliverToBoxAdapter(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  const Text('Failed to load donations'),
+                  TextButton(
+                    onPressed: _loadDonations,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return SliverToBoxAdapter(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.bloodtype_outlined, size: 48, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  const Text('No donations yet'),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DonationFormScreen(donorId: widget.donor.id ?? 0),
+                        ),
+                      );
+                      await _loadDonations();
+                    },
+                    child: const Text('Add First Donation'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        
+        return SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final donation = snapshot.data![index];
+              return _buildDonationItem(donation);
+            },
+            childCount: snapshot.data!.length,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDonationItem(Donation donation) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.bloodtype, color: Colors.red),
+        title: Text(
+          donation.date ?? 'Unknown date',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (donation.hospital != null) Text('Hospital: ${donation.hospital}'),
+            if (donation.units != null) Text('Units: ${donation.units}'),
+          ],
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete, color: Colors.red),
+          onPressed: () => _deleteDonation(donation.id ?? 0),
+        ),
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DonationFormScreen(
+                donorId: widget.donor.id ?? 0,
+                donation: donation,
+              ),
+            ),
+          );
+          await _loadDonations();
         },
       ),
     );
@@ -181,91 +333,9 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
         children: [
           Icon(icon, color: Colors.red.shade700),
           const SizedBox(width: 16),
-          Expanded(child: Text(text, style: AppTextStyles.bodyLarge)),
+          Expanded(child: Text(text)),
         ],
       ),
     );
-  }
-
-  Widget _buildDonationList() {
-    return _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : FutureBuilder<List<Donation>>(
-            future: _donationsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text('Failed to load donations', 
-                        style: AppTextStyles.headlineMedium),
-                    ],
-                  ),
-                );
-              }
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.bloodtype_outlined, size: 48, color: Colors.grey),
-                      const SizedBox(height: 16),
-                      Text('No donations yet', style: AppTextStyles.headlineMedium),
-                      const SizedBox(height: 8),
-                      const Text('Tap the + button to add a donation',
-                        style: AppTextStyles.bodyMedium),
-                    ],
-                  ),
-                );
-              }
-              return ListView.separated(
-                itemCount: snapshot.data!.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final donation = snapshot.data![index];
-                  return ModernCard(
-                    padding: const EdgeInsets.all(12),
-                    child: ListTile(
-                      leading: const Icon(Icons.bloodtype, 
-                        color: Colors.red, size: 32),
-                      title: Text(
-                        donation.date ?? 'Unknown date',
-                        style: AppTextStyles.bodyLarge.copyWith(
-                          fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (donation.hospital != null)
-                            Text('At: ${donation.hospital}'),
-                          if (donation.units != null)
-                            Text('Units: ${donation.units}'),
-                        ],
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _deleteDonation(donation.id ?? 0),
-                      ),
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DonationFormScreen(
-                              donorId: widget.donor.id ?? 0,
-                              donation: donation,
-                            ),
-                          ),
-                        );
-                        _loadDonations();
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-          );
   }
 }
