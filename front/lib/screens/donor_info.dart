@@ -48,7 +48,9 @@ class DonorInfoScreen extends StatelessWidget {
               '• Free health checkup\n• Burns 650 calories per donation\n• Reduces risk of heart disease\n• Saves up to 3 lives!',
               Icons.favorite,
             ),
+            SizedBox(height: 130),
           ],
+        
         ),
       ),
     );

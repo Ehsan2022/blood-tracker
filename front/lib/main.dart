@@ -1,3 +1,4 @@
+import 'package:class_project/screens/donor_info.dart';
 import 'package:flutter/material.dart';
 import 'package:class_project/screens/about.dart';
 import 'package:class_project/screens/donor_form.dart';
@@ -22,6 +23,7 @@ class LifeBloodApp extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+      
           ),
         ),
       ),
@@ -44,31 +46,41 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
   final List<Widget> _pages = [
     const DonorListScreen(),
-    const SizedBox(), // Placeholder for add action
     const AboutScreen(),
+    const DonorInfoScreen(),
   ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: _buildAnimatedNavBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToDonorForm(context),
-        backgroundColor: Colors.red.shade700,
-        elevation: 6,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
+@override
+Widget build(BuildContext context) {
+  return Stack(
+    children: [
+      Scaffold(
+        key: _scaffoldKey,
+        extendBody: true,
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
         ),
-        child: const Icon(Icons.add, color: Colors.white, size: 32),
+        bottomNavigationBar: _buildAnimatedNavBar(_currentIndex),
+        // Remove default FAB
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
-  }
+      // Manually positioned FAB
+      Positioned(
+        left: MediaQuery.of(context).size.width / 2 - 30, // Center horizontally
+        bottom: 5, // 10px from bottom
+        child: FloatingActionButton(
+          onPressed: () => _navigateToDonorForm(context),
+          backgroundColor: Colors.white,
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: const Icon(Icons.add, color: Colors.red, size: 32),
+        ),
+      ),
+    ],
+  );
+}
 
   Future<void> _navigateToDonorForm(BuildContext context) async {
     final result = await Navigator.push(
@@ -83,44 +95,61 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     }
   }
 
-  Widget _buildAnimatedNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.red.shade900, Colors.red.shade700],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+@override
+Widget _buildAnimatedNavBar(int index) {
+  return Stack(
+    alignment: Alignment.bottomCenter,
+    clipBehavior: Clip.none,
+    children: [
+      // The red semicircle navigation
+      Container(
+        width: MediaQuery.of(context).size.width * 0.65,
+        height: 130,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(150),
+            topRight: Radius.circular(150),
+          ),
+          gradient: LinearGradient(
+            colors: [Colors.red.shade900, Colors.red.shade700],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 12,
-            spreadRadius: 2,
-          )
-        ],
+        child: Stack(
+          children: [
+            Positioned(
+              left: MediaQuery.of(context).size.width * 0.325 - 90,
+              bottom: 20, // 40px from bottom
+              child: _buildNavItem(Icons.people_alt_outlined, 0),
+            ),
+            Positioned(
+              left: MediaQuery.of(context).size.width * 0.325 - 28, // Center calculation
+              bottom: 70, // 40px from bottom
+              child: _buildNavItem(Icons.info, 1,),
+            ),
+            Positioned(
+              right: MediaQuery.of(context).size.width * 0.1 ,
+              bottom: 20, // 40px from bottom
+              child:_buildNavItem(Icons.medical_information_rounded, 2),
+            ),
+          ],
+        ),
       ),
-      height: 80,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.people_alt_outlined, 0, 'Donors'),
-          const SizedBox(width: 60), // Space for FAB
-          _buildNavItem(Icons.info_outline, 2, 'About'),
-        ],
-      ),
-    );
-  }
+    ],
+  );
+}
 
-  Widget _buildNavItem(IconData icon, int index, String label) {
+  Widget _buildNavItem(IconData icon, int index) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        padding: const EdgeInsets.all( 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          shape: BoxShape.circle,
           color: isSelected ? Colors.white.withOpacity(0.2) : Colors.transparent,
         ),
         child: Column(
@@ -129,16 +158,9 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
             Icon(
               icon,
               color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
-              size: 28,
+              size: index == 1 ? 36 : 28, // Larger for info icon
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
-                fontSize: 12,
-              ),
-            ),
+            
           ],
         ),
       ),

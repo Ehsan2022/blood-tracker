@@ -81,6 +81,7 @@ class AboutScreen extends StatelessWidget {
               '• Our dedicated blood donors\n• Medical professionals\n• Open source contributors\n• The Flutter community',
               Icons.volunteer_activism,
             ),
+            SizedBox(height: 130),
           ],
         ),
       ),
@@ -117,6 +118,7 @@ class AboutScreen extends StatelessWidget {
               content,
               style: const TextStyle(fontSize: 16, height: 1.5),
             ),
+
           ],
         ),
       ),

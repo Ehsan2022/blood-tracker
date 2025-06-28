@@ -96,7 +96,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Blood Donors'),
+        title: const Text('Donor List'),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -108,20 +108,6 @@ class _DonorListScreenState extends State<DonorListScreen> {
           ),
         ),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DonorFormScreen(),
-                ),
-              );
-              await _loadDonors();
-            },
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -170,8 +156,11 @@ class _DonorListScreenState extends State<DonorListScreen> {
   }
 
   Widget _buildDonorList() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 1,
+        mainAxisExtent: 180, // Set your custom height here
+      ),
       itemCount: _filteredDonors.length,
       itemBuilder: (context, index) {
         final donor = _filteredDonors[index];
@@ -181,74 +170,124 @@ class _DonorListScreenState extends State<DonorListScreen> {
   }
 
   Widget _buildDonorCard(Donor donor) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => _navigateToDetail(donor),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.all(6.0),
+      child:Card(
+        elevation: 10,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _navigateToDetail(donor),
           child: Row(
             children: [
+              // Left Section (30% - Red)
               Container(
-                width: 60,
-                height: 60,
+                width: MediaQuery.of(context).size.width * 0.3,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.red.shade700,
-                      Colors.red.shade900,
+                      Colors.red.shade100,
+                      Colors.red.shade600,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  shape: BoxShape.circle,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    bottomLeft: Radius.circular(16),
+                  ),
                 ),
-                child: Center(
-                  child: Text(
-                    donor.bloodGroup?.substring(0, 1) ?? '?',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                     CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.red,
+                      child:  Text(
+                        donor.bloodGroup ?? 'Unknown',
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                     ),
+                      const SizedBox(height: 8),
+                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.place, size: 20, color: Colors.white),
+                          const SizedBox(width: 4),
+                          Text(
+                            donor.city ?? 'Unknown',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              
+              // Right Section (70% - White)
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      donor.name,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        donor.name,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.cake, size: 16, color: Colors.grey),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${donor.age} years',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 16,
+                            ),
                           ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${donor.age} years • ${donor.city ?? 'Unknown'}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      donor.bloodGroup ?? 'Blood type unknown',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.red.shade700,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
+                        ],
+                      ),
+                      if (donor.phone != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.phone, size: 16, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                donor.phone!,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontSize: 16,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () => _deleteDonor(donor.id ?? 0),
               ),
             ],
           ),
