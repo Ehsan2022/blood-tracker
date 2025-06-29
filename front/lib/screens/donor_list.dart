@@ -40,10 +40,23 @@ class _DonorListScreenState extends State<DonorListScreen> {
     setState(() {
       _filteredDonors = _allDonors.where((donor) {
         return donor.name.toLowerCase().contains(query) ||
-            (donor.bloodGroup?.toLowerCase().contains(query) ?? false) ||
+            (donor.bloodGroup.toLowerCase().contains(query)) ||
             (donor.city?.toLowerCase().contains(query) ?? false);
       }).toList();
     });
+  }
+
+  Map<String, int> _getBloodGroupCounts() {
+    final counts = <String, int>{};
+    for (var donor in _allDonors) {
+      final bg = donor.bloodGroup;
+      counts[bg] = (counts[bg] ?? 0) + 1;
+    }
+    return counts;
+  }
+
+  int _getTotalDonations() {
+    return _allDonors.fold(0, (sum, donor) => sum + (donor.donationCount ?? 0));
   }
 
   Future<void> _handleRefresh() async {
@@ -85,87 +98,93 @@ class _DonorListScreenState extends State<DonorListScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  Widget _buildStatItem(IconData icon, String label, int value) {
+    return Column(
+      children: [
+        Icon(icon, size: 40, color: Colors.red.shade700),
+        const SizedBox(height: 4),
+        Text(
+          value.toString(),
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey.shade700,
+          ),
+        ),
+      ],
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        title: const Text('Donor List'),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.red.shade900, Colors.red.shade700],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.9),
-                prefixIcon: const Icon(Icons.search, color: Colors.red),
-                hintText: 'Search donors...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              ),
-            ),
-          ),
-        ),
+  Widget _buildStatsCard() {
+    if (_allDonors.isEmpty) return const SizedBox();
+
+    final bloodGroups = _getBloodGroupCounts();
+    final totalDonors = _allDonors.length;
+    final totalDonations = _getTotalDonations();
+
+    return Card(
+      margin: const EdgeInsets.all(16),
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      body: LiquidPullToRefresh(
-        onRefresh: _handleRefresh,
-        color: Colors.red.shade700,
-        height: 150,
-        backgroundColor: Colors.white,
-        animSpeedFactor: 2,
-        showChildOpacityTransition: false,
-        child: FutureBuilder<List<Donor>>(
-          future: _donorsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return _buildErrorState();
-            }
-            if (!snapshot.hasData || _filteredDonors.isEmpty) {
-              return _buildEmptyState();
-            }
-            return _buildDonorList();
-          },
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildStatItem(Icons.people, 'Total Donors', totalDonors),
+                _buildStatItem(Icons.bloodtype, 'Total Donations', totalDonations),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 20,
+              runSpacing: 8,
+              children: bloodGroups.entries.map((entry) {
+                return Chip(
+                  label: Text('${entry.key} : ${entry.value}'),
+                  backgroundColor: Colors.white,
+                  labelStyle: TextStyle(
+                    color: Colors.red.shade900,
+                    fontWeight: FontWeight.bold,
+                  ),
+                 
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildDonorList() {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        mainAxisExtent: 180, // Set your custom height here
-      ),
-      itemCount: _filteredDonors.length,
-      itemBuilder: (context, index) {
-        final donor = _filteredDonors[index];
-        return _buildDonorCard(donor);
-      },
+    return Column(
+      children: [
+        _buildStatsCard(),
+        Expanded(
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              mainAxisExtent: 180,
+            ),
+            itemCount: _filteredDonors.length,
+            itemBuilder: (context, index) {
+              final donor = _filteredDonors[index];
+              return _buildDonorCard(donor);
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -180,14 +199,14 @@ class _DonorListScreenState extends State<DonorListScreen> {
         onTap: () => _navigateToDetail(donor),
         child: Row(
           children: [
-            // Left Section (30% - Red)
             Container(
               width: MediaQuery.of(context).size.width * 0.3,
+              height: double.infinity,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.red.shade100,
-                    Colors.red.shade600,
+                    const Color.fromARGB(255, 255, 237, 235),
+                    Colors.red.shade400,
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -199,43 +218,20 @@ class _DonorListScreenState extends State<DonorListScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                   CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.red,
-                    child:  Text(
-                      donor.bloodGroup ?? 'Unknown',
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.red,
+                  child: Text(
+                    donor.bloodGroup ?? '?',
+                    style: const TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                   ),
-                    const SizedBox(height: 8),
-                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.place, size: 20, color: Colors.white),
-                        const SizedBox(width: 4),
-                        Text(
-                          donor.city ?? 'Unknown',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-            
-            // Right Section (70% - White)
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(12),
@@ -246,21 +242,34 @@ class _DonorListScreenState extends State<DonorListScreen> {
                     Text(
                       donor.name,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                         Icon(Icons.cake, size: 16, color: Colors.red.shade700),
+                        Icon(Icons.cake, size: 16, color: Colors.red.shade700),
                         const SizedBox(width: 4),
                         Text(
                           '${donor.age} years',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontSize: 16,
-                          ),
+                                fontSize: 16,
+                              ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.place, size: 16, color: Colors.red.shade700),
+                        const SizedBox(width: 4),
+                        Text(
+                          donor.city ?? 'Unknown City',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontSize: 16,
+                              ),
                         ),
                       ],
                     ),
@@ -268,14 +277,14 @@ class _DonorListScreenState extends State<DonorListScreen> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                           Icon(Icons.phone, size: 16, color: Colors.red.shade700),
+                          Icon(Icons.phone, size: 16, color: Colors.red.shade700),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               donor.phone!,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: 16,
-                              ),
+                                    fontSize: 16,
+                                  ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -364,6 +373,74 @@ class _DonorListScreenState extends State<DonorListScreen> {
             child: const Text('Add Donor', style: TextStyle(color: Colors.white)),
           ),
         ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.red.shade900, Colors.red.shade700],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.9),
+                prefixIcon: const Icon(Icons.search, color: Colors.red),
+                hintText: 'Search donors...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: LiquidPullToRefresh(
+        onRefresh: _handleRefresh,
+        color: Colors.red.shade700,
+        height: 150,
+        backgroundColor: Colors.white,
+        animSpeedFactor: 2,
+        showChildOpacityTransition: false,
+        child: FutureBuilder<List<Donor>>(
+          future: _donorsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return _buildErrorState();
+            }
+            if (!snapshot.hasData || _filteredDonors.isEmpty) {
+              return _buildEmptyState();
+            }
+            return _buildDonorList();
+          },
+        ),
       ),
     );
   }

@@ -9,9 +9,10 @@ class Donor {
   final String? phone;
   final String? city;
   final DateTime? lastDonation;
+   final int donationCount;
   final List<Donation>? donations;
 
-  Donor({
+  Donor( {
     this.id,
     required this.name,
     required this.age,
@@ -21,6 +22,7 @@ class Donor {
     this.city,
     this.lastDonation,
     this.donations,
+    this.donationCount =0,
   });
 
   factory Donor.fromJson(Map<String, dynamic> json) {

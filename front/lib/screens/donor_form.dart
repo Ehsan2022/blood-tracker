@@ -39,7 +39,7 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
       if (widget.donor!.lastDonation is String) {
         _lastDonation = DateTime.tryParse(widget.donor!.lastDonation as String);
       } else {
-        _lastDonation = widget.donor!.lastDonation as DateTime?;
+        _lastDonation = widget.donor!.lastDonation;
       }
     }
   }
@@ -284,34 +284,41 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
   }
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final donor = Donor(
-          id: widget.donor?.id,
-          name: _nameController.text,
-          age: int.parse(_ageController.text),
-          gender: _selectedGender,
-          bloodGroup: _selectedBloodGroup,
-          phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
-          city: _cityController.text.isNotEmpty ? _cityController.text : null,
-          lastDonation: _lastDonation,
-        );
+  if (_formKey.currentState!.validate()) {
+    try {
+      final donor = Donor(
+        id: widget.donor?.id,
+        name: _nameController.text,
+        age: int.parse(_ageController.text),
+        gender: _selectedGender,
+        bloodGroup: _selectedBloodGroup,
+        phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+        city: _cityController.text.isNotEmpty ? _cityController.text : null,
+        lastDonation: _lastDonation,
+      );
 
-        final savedDonor = widget.donor == null
-            ? await ApiService.createDonor(donor)
-            : await ApiService.updateDonor(donor);
+      final savedDonor = widget.donor == null
+          ? await ApiService.createDonor(donor)
+          : await ApiService.updateDonor(donor);
 
-        if (!mounted) return;
-        Navigator.pop(context, savedDonor);
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
+      if (!mounted) return;
+      
+      // Return the saved donor and a refresh flag
+      Navigator.pop(context, {
+        'donor': savedDonor,
+        'shouldRefresh': true
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
-
+}
   @override
   void dispose() {
     _nameController.dispose();

@@ -101,33 +101,29 @@ Widget _buildAnimatedNavBar(int index) {
     children: [
       // The red semicircle bottom navigation bar
       Container(
-        width: MediaQuery.of(context).size.width * 0.65,
+        width: MediaQuery.of(context).size.width * 0.60,
         height: 130,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(150),
             topRight: Radius.circular(150),
           ),
-          gradient: LinearGradient(
-            colors: [Colors.red.shade900, Colors.red.shade700],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Colors.red
         ),
         child: Stack(
           children: [
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.325 - 90,
+              left: MediaQuery.of(context).size.width * 0.325 - 100,
               bottom: 20, 
               child: _buildNavItem(Icons.people_alt_outlined, 0),
             ),
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.325 - 28, // Center calculation
+              left: MediaQuery.of(context).size.width * 0.325 - 38, // Center calculation
               bottom: 70, 
               child: _buildNavItem(Icons.info, 1,),
             ),
             Positioned(
-              right: MediaQuery.of(context).size.width * 0.1 ,
+              right: MediaQuery.of(context).size.width * 0.325 - 100 ,
               bottom: 20, 
               child:_buildNavItem(Icons.medical_information_rounded, 2),
             ),

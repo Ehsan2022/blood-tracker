@@ -84,17 +84,21 @@ Future<void> _deleteDonor() async {
     try {
       await ApiService.deleteDonor(widget.donor.id!);
       if (!mounted) return;
-      
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Donor deleted successfully'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(top: 16, left: 16, right: 16),
-        ),
-      );
-      
+        margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).size.height - 
+                (MediaQuery.of(context).padding.top + kToolbarHeight + 130),
+        left: 16,
+        right: 16,
+      ),
+      dismissDirection: DismissDirection.up,
+      duration: Duration(seconds: 3),
+    ),
+  );
       // Return true to indicate success to previous screen
       Navigator.pop(context, true);
     } catch (e) {
@@ -105,6 +109,7 @@ Future<void> _deleteDonor() async {
     }
   }
 }
+
   Future<void> _editDonor() async {
     final result = await Navigator.push(
       context,
