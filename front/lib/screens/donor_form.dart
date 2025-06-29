@@ -78,11 +78,12 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: 'Full Name*',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(),
-                      ),
+                        prefixIcon: Icon(Icons.person, color: Colors.red.shade700),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter donor name';
@@ -93,10 +94,12 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _ageController,
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: 'Age*',
-                        prefixIcon: Icon(Icons.cake),
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.cake, color: Colors.red.shade700),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
@@ -116,10 +119,12 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: _selectedGender,
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: 'Gender*',
-                        prefixIcon: Icon(Icons.transgender),
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.transgender, color: Colors.red.shade700),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                       ),
                       items: _genders.map((gender) {
                         return DropdownMenuItem(
@@ -144,10 +149,12 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: _selectedBloodGroup,
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: 'Blood Group*',
-                        prefixIcon: Icon(Icons.bloodtype),
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.bloodtype, color: Colors.red.shade700),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                       ),
                       items: _bloodGroups.map((group) {
                         return DropdownMenuItem(
@@ -172,30 +179,36 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _phoneController,
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: 'Phone Number',
-                        prefixIcon: Icon(Icons.phone),
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.phone, color: Colors.red.shade700),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                       ),
                       keyboardType: TextInputType.phone,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _cityController,
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: 'City',
-                        prefixIcon: Icon(Icons.location_city),
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.location_city, color: Colors.red.shade700),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                       ),
                     ),
                     const SizedBox(height: 16),
                     InkWell(
                       onTap: () => _selectDate(context),
                       child: InputDecorator(
-                        decoration: const InputDecoration(
+                        decoration:  InputDecoration(
                           labelText: 'Last Donation Date',
-                          prefixIcon: Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.calendar_today, color: Colors.red.shade700),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,7 +218,7 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                                   ? '${_lastDonation!.day}/${_lastDonation!.month}/${_lastDonation!.year}'
                                   : 'Select date',
                             ),
-                            const Icon(Icons.calendar_month),
+                             Icon(Icons.calendar_month, color: Colors.red.shade700),
                           ],
                         ),
                       ),

@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
@@ -16,19 +18,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 @Table(name = "donation")
 public class Donation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String date;
+    private LocalDate date;
     private String hospital;
     private int units;
     private String notes;

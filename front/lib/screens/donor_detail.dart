@@ -140,19 +140,6 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red.shade700,
-        child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DonationFormScreen(donorId: widget.donor.id ?? 0),
-            ),
-          );
-          await _loadDonations();
-        },
-      ),
     );
   }
 
@@ -173,24 +160,24 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundColor: Colors.red.shade50,
+                  backgroundColor: Colors.red.shade500,
                   child: Text(
                     donor.bloodGroup ?? '?',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.red.shade700,
+                      color: Colors.white,
                     ),
                   ),
                 ),
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      icon: const Icon(Icons.edit, color: Colors.blue, size: 30),
                       onPressed: _editDonor,
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
+                      icon: const Icon(Icons.delete, color: Colors.red, size: 30),
                       onPressed: _deleteDonor,
                     ),
                   ],
@@ -204,11 +191,45 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
             _buildInfoRow(Icons.bloodtype, donor.bloodGroup ?? 'Unknown'),
             if (donor.phone != null) _buildInfoRow(Icons.phone, donor.phone!),
             if (donor.city != null) _buildInfoRow(Icons.location_city, donor.city!),
-            _buildInfoRow(
-              Icons.calendar_today,
-              donor.lastDonation != null 
-                  ? 'Last donated: ${donor.lastDonation!.toLocal().toString().split(' ')[0]}'
-                  : 'Never donated',
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  Icon(Icons.calendar_today, color: Colors.red.shade700, size: 32),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      donor.lastDonation != null 
+                          ? 'Last donated: ${donor.lastDonation!.toLocal().toString().split(' ')[0]}'
+                          : 'Never donated',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade700,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.add, color: Colors.white, size: 30),
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DonationFormScreen(donorId: widget.donor.id ?? 0),
+                          ),
+                        );
+                        await _loadDonations();
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -331,9 +352,17 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: Colors.red.shade700),
+          Icon(icon, color: Colors.red.shade700, size: 32),
           const SizedBox(width: 16),
-          Expanded(child: Text(text)),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ],
       ),
     );
