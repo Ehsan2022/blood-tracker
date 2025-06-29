@@ -42,9 +42,18 @@ class ApiService {
   }
 
   static Future<void> deleteDonor(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/donors/$id'));
-    _handleResponse(response);
+      final response = await http.delete(Uri.parse('$baseUrl/donors/$id'));
+  // Accept either 200 (with body) or 204 (no content)
+  if (response.statusCode == 200 || response.statusCode == 204) {
+    return; // Success - no need to parse body
+  } else {
+    // Try to get error message if response has body
+    final error = response.body.isEmpty 
+        ? 'Failed to delete donor' 
+        : json.decode(response.body)['message'];
+    throw Exception(error);
   }
+}
 
 //------------------------------------  donation CRUD Operations ---------------------------------------//
   static Future<List<Donation>> fetchDonations() async {
