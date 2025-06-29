@@ -126,7 +126,6 @@ class AboutScreen extends StatelessWidget {
   }
 
   Future<String> _getAppVersion() async {
-    // In a real app, you would use package_info_plus
     await Future.delayed(const Duration(milliseconds: 300));
     return '1.2.0';
   }

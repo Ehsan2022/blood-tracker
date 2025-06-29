@@ -32,7 +32,7 @@ public class DonorController {
 
     @PostMapping
     public ResponseEntity<Donor> create(@RequestBody Donor donor) {
-            System.out.println("Received donor: " + donor.toString()); // Debug log
+            System.out.println("Received donor: " + donor.toString()); 
             Donor savedDonor = repo.save(donor);
             return ResponseEntity.ok(savedDonor);
 

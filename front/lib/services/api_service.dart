@@ -70,7 +70,7 @@ class ApiService {
 
 
 
-// Fetch all donations for a donor (alternative endpoint)
+// Fetch all donations for a donor 
 static Future<List<Donation>> fetchDonationsByDonorAlt(int donorId) async {
   final res = await http.get(Uri.parse('$baseUrl/donations/donor/$donorId'));
   final data = json.decode(res.body) as List;
@@ -95,7 +95,7 @@ static Future<void> updateDonation(Donation donation) async {
   );
 }
 
-// Delete a donation (alternative)
+// Delete a donation
 static Future<void> deleteDonationAlt(int id) async {
   await http.delete(Uri.parse('$baseUrl/donations/$id'));
 }

@@ -42,7 +42,6 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
     } else {
       await ApiService.updateDonation(donation);
     }
-    // ignore: use_build_context_synchronously
     Navigator.pop(context, true);
   }
 }

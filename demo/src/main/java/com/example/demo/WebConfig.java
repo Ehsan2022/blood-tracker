@@ -13,7 +13,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*") // use "http://localhost:*****" for stricter access
+                        .allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };

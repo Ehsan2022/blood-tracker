@@ -17,12 +17,12 @@ import lombok.NoArgsConstructor;
 public class Donor {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;               // Auto-generated
-    private String name;          // Required (non-null)
-    private int age;              // Required (primitive, cannot be null)
-    private String gender;        // Required
-    private String bloodGroup;    // Required
-    private String phone;         // Required
-    private String city;         // Required
-    private LocalDate lastDonation; // Nullable
+    private Long id;               
+    private String name;          
+    private int age;             
+    private String gender;     
+    private String bloodGroup;  
+    private String phone;        
+    private String city;       
+    private LocalDate lastDonation; 
 }

@@ -62,12 +62,10 @@ Widget build(BuildContext context) {
           children: _pages,
         ),
         bottomNavigationBar: _buildAnimatedNavBar(_currentIndex),
-        // Remove default FAB
       ),
-      // Manually positioned FAB
       Positioned(
         left: MediaQuery.of(context).size.width / 2 - 30, // Center horizontally
-        bottom: 5, // 10px from bottom
+        bottom: 5, 
         child: FloatingActionButton(
           onPressed: () => _navigateToDonorForm(context),
           backgroundColor: Colors.white,
@@ -101,7 +99,7 @@ Widget _buildAnimatedNavBar(int index) {
     alignment: Alignment.bottomCenter,
     clipBehavior: Clip.none,
     children: [
-      // The red semicircle navigation
+      // The red semicircle bottom navigation bar
       Container(
         width: MediaQuery.of(context).size.width * 0.65,
         height: 130,
@@ -120,17 +118,17 @@ Widget _buildAnimatedNavBar(int index) {
           children: [
             Positioned(
               left: MediaQuery.of(context).size.width * 0.325 - 90,
-              bottom: 20, // 40px from bottom
+              bottom: 20, 
               child: _buildNavItem(Icons.people_alt_outlined, 0),
             ),
             Positioned(
               left: MediaQuery.of(context).size.width * 0.325 - 28, // Center calculation
-              bottom: 70, // 40px from bottom
+              bottom: 70, 
               child: _buildNavItem(Icons.info, 1,),
             ),
             Positioned(
               right: MediaQuery.of(context).size.width * 0.1 ,
-              bottom: 20, // 40px from bottom
+              bottom: 20, 
               child:_buildNavItem(Icons.medical_information_rounded, 2),
             ),
           ],
@@ -158,7 +156,7 @@ Widget _buildAnimatedNavBar(int index) {
             Icon(
               icon,
               color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
-              size: index == 1 ? 36 : 28, // Larger for info icon
+              size: index == 1 ? 36 : 28, 
             ),
             
           ],
