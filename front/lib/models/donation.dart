@@ -1,10 +1,10 @@
 class Donation {
   final int? id;
   final int donorId;
-  final String date;
-  final String hospital;
-  final int units;
-  final String notes;
+  final String? date;
+  final String? hospital;
+  final int? units;
+  final String? notes;
 
   Donation({
     this.id,
@@ -16,15 +16,15 @@ class Donation {
   });
 
   factory Donation.fromJson(Map<String, dynamic> json) {
-    return Donation(
-      id: json['id'],
-      donorId: json['donor']['id'],
-      date: json['date'],
-      hospital: json['hospital'],
-      units: json['units'],
-      notes: json['notes'] ?? '',
-    );
-  }
+  return Donation(
+    id: json['id'] as int?,
+    date: json['date']?.toString(),
+    hospital: json['hospital']?.toString(),
+    units: json['units'] as int?,
+    notes: json['notes']?.toString(),
+    donorId: json['donor'] != null ? (json['donor'] is Map ? json['donor']['id'] : json['donor']) as int : 0, // Default to 0 if not present
+  );
+}
 
   Map<String, dynamic> toJson() {
     return {
@@ -37,3 +37,6 @@ class Donation {
     };
   }
 }
+
+
+

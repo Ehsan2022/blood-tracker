@@ -6,15 +6,21 @@ import '../models/donation.dart';
 class ApiService {
   static const String baseUrl = 'http://localhost:8080/api';
 
+  // Helper method for handling responses
+  static dynamic _handleResponse(http.Response response) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return json.decode(response.body);
+    } else {
+      throw Exception(
+          'Failed to load data. Status code: ${response.statusCode}');
+    }
+  }
+
   // Donor CRUD Operations
   static Future<List<Donor>> fetchDonors() async {
     final response = await http.get(Uri.parse('$baseUrl/donors'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Donor.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load donors');
-    }
+    final data = _handleResponse(response) as List;
+    return data.map((json) => Donor.fromJson(json)).toList();
   }
 
   static Future<Donor> createDonor(Donor donor) async {
@@ -23,11 +29,7 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(donor.toJson()),
     );
-    if (response.statusCode == 201) {
-      return Donor.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to create donor');
-    }
+    return Donor.fromJson(_handleResponse(response));
   }
 
   static Future<Donor> updateDonor(Donor donor) async {
@@ -36,68 +38,60 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(donor.toJson()),
     );
-    if (response.statusCode == 200) {
-      return Donor.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to update donor');
-    }
+    return Donor.fromJson(_handleResponse(response));
   }
 
   static Future<void> deleteDonor(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/donors/$id'));
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete donor');
+    _handleResponse(response);
+  }
+
+//------------------------------------  donation CRUD Operations ---------------------------------------//
+  static Future<List<Donation>> fetchDonations() async {
+    final response = await http.get(Uri.parse('$baseUrl/donations'));
+    final data = _handleResponse(response) as List;
+    return data.map((json) => Donation.fromJson(json)).toList();
+  }
+
+static Future<Donation> createDonation(Donation donation) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/donations'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(donation.toJson()),
+    );
+    return Donation.fromJson(_handleResponse(response));
+  }
+  static Future<List<Donation>> fetchDonationsByDonor(int donorId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/donations/donor/$donorId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      
+      final data = _handleResponse(response) as List;
+      return data.map((json) => Donation.fromJson(json)).toList();
+    } catch (e) {
+      print('Error fetching donations: $e');
+      rethrow;
     }
   }
 
-  // Donation CRUD Operations
-  static Future<List<Donation>> fetchDonationsByDonor(int donorId) async {
-    final response = await http.get(Uri.parse('$baseUrl/donations?donorId=$donorId'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Donation.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load donations');
-    }
+  
+
+  static Future<Donation> updateDonation(Donation donation) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/donations/${donation.id}'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(donation.toJson()),
+    );
+    return Donation.fromJson(_handleResponse(response));
   }
 
   static Future<void> deleteDonation(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/donations/$id'));
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete donation');
-    }
+    _handleResponse(response);
   }
-
-
-
-// Fetch all donations for a donor 
-static Future<List<Donation>> fetchDonationsByDonorAlt(int donorId) async {
-  final res = await http.get(Uri.parse('$baseUrl/donations/donor/$donorId'));
-  final data = json.decode(res.body) as List;
-  return data.map((e) => Donation.fromJson(e)).toList();
-}
-
-// Create a new donation
-static Future<void> createDonation(Donation donation) async {
-  await http.post(
-    Uri.parse('$baseUrl/donations'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode(donation.toJson()),
-  );
-}
-
-// Update an existing donation
-static Future<void> updateDonation(Donation donation) async {
-  await http.put(
-    Uri.parse('$baseUrl/donations/${donation.id}'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode(donation.toJson()),
-  );
-}
-
-// Delete a donation
-static Future<void> deleteDonationAlt(int id) async {
-  await http.delete(Uri.parse('$baseUrl/donations/$id'));
-}
-
 }

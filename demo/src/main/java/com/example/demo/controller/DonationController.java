@@ -18,9 +18,9 @@ import com.example.demo.model.Donor;
 import com.example.demo.repository.DonationRepository;
 import com.example.demo.repository.DonorRepository;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/donations")
-@CrossOrigin(origins = "*")
 public class DonationController {
 
     private final DonationRepository donationRepository;

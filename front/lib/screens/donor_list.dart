@@ -170,127 +170,124 @@ class _DonorListScreenState extends State<DonorListScreen> {
   }
 
   Widget _buildDonorCard(Donor donor) {
-    return Padding(
-      padding: const EdgeInsets.all(6.0),
-      child:Card(
-        elevation: 10,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _navigateToDetail(donor),
-          child: Row(
-            children: [
-              // Left Section (30% - Red)
-              Container(
-                width: MediaQuery.of(context).size.width * 0.3,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.red.shade100,
-                      Colors.red.shade600,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    bottomLeft: Radius.circular(16),
-                  ),
+    return Card(
+      elevation: 10,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _navigateToDetail(donor),
+        child: Row(
+          children: [
+            // Left Section (30% - Red)
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.red.shade100,
+                    Colors.red.shade600,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                     CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.red,
-                      child:  Text(
-                        donor.bloodGroup ?? 'Unknown',
-                        style: const TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                     ),
-                      const SizedBox(height: 8),
-                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.place, size: 20, color: Colors.white),
-                          const SizedBox(width: 4),
-                          Text(
-                            donor.city ?? 'Unknown',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
                 ),
               ),
-              
-              // Right Section (70% - White)
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                   CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.red,
+                    child:  Text(
+                      donor.bloodGroup ?? 'Unknown',
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                   ),
+                    const SizedBox(height: 8),
+                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        donor.name,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.cake, size: 16, color: Colors.grey),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${donor.age} years',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontSize: 16,
-                            ),
+                      children: [
+                        const Icon(Icons.place, size: 20, color: Colors.white),
+                        const SizedBox(width: 4),
+                        Text(
+                          donor.city ?? 'Unknown',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold
                           ),
-                        ],
-                      ),
-                      if (donor.phone != null) ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.phone, size: 16, color: Colors.grey),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                donor.phone!,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontSize: 16,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
                         ),
                       ],
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            
+            // Right Section (70% - White)
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      donor.name,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                         Icon(Icons.cake, size: 16, color: Colors.red.shade700),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${donor.age} years',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (donor.phone != null) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                           Icon(Icons.phone, size: 16, color: Colors.red.shade700),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              donor.phone!,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontSize: 16,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

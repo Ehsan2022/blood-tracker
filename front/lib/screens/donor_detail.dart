@@ -15,7 +15,8 @@ class DonorDetailScreen extends StatefulWidget {
 }
 
 class _DonorDetailScreenState extends State<DonorDetailScreen> {
-  late Future<List<Donation>> _donationsFuture;
+    Future<List<Donation>>? _donationsFuture; // Nullable future
+
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey();
 
   @override
@@ -25,10 +26,20 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
   }
 
   Future<void> _loadDonations() async {
+  print('Loading donations for donor ID: ${widget.donor.id}');
+  try {
+    final donations = await ApiService.fetchDonationsByDonor(widget.donor.id ?? 0);
+    print('Received donations: ${donations.length}');
     setState(() {
-      _donationsFuture = ApiService.fetchDonationsByDonor(widget.donor.id ?? 0);
+      _donationsFuture = Future.value(donations);
+    });
+  } catch (e) {
+    print('Error loading donations: $e');
+    setState(() {
+      _donationsFuture = Future.error(e);
     });
   }
+}
 
   Future<void> _handleRefresh() async {
     await _loadDonations();
@@ -162,7 +173,7 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
                   radius: 40,
                   backgroundColor: Colors.red.shade500,
                   child: Text(
-                    donor.bloodGroup ?? '?',
+                    donor.bloodGroup,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -187,8 +198,8 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
             const SizedBox(height: 16),
             _buildInfoRow(Icons.person, donor.name),
             _buildInfoRow(Icons.cake, '${donor.age} years'),
-            _buildInfoRow(Icons.transgender, donor.gender ?? 'Unknown'),
-            _buildInfoRow(Icons.bloodtype, donor.bloodGroup ?? 'Unknown'),
+            _buildInfoRow(Icons.transgender, donor.gender),
+            _buildInfoRow(Icons.bloodtype, donor.bloodGroup),
             if (donor.phone != null) _buildInfoRow(Icons.phone, donor.phone!),
             if (donor.city != null) _buildInfoRow(Icons.location_city, donor.city!),
             Padding(
@@ -237,116 +248,94 @@ class _DonorDetailScreenState extends State<DonorDetailScreen> {
     );
   }
 
-  Widget _buildDonationList() {
-    return FutureBuilder<List<Donation>>(
-      future: _donationsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SliverFillRemaining(
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-        
-        if (snapshot.hasError) {
-          return SliverToBoxAdapter(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  const Text('Failed to load donations'),
-                  TextButton(
-                    onPressed: _loadDonations,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
+ Widget _buildDonationList() {
+  return FutureBuilder<List<Donation>>(
+    future: _donationsFuture,
+    builder: (context, snapshot) {
+      // Add debug print
+      print('Snapshot state: ${snapshot.connectionState}');
+      print('Snapshot data: ${snapshot.data}');
+      print('Snapshot error: ${snapshot.error}');
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return SliverFillRemaining(
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      if (snapshot.hasError) {
+        return SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text('Error: ${snapshot.error}'),
+                ElevatedButton(
+                  onPressed: _loadDonations,
+                  child: Text('Retry'),
+                ),
+              ],
             ),
-          );
-        }
-        
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return SliverToBoxAdapter(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.bloodtype_outlined, size: 48, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  const Text('No donations yet'),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DonationFormScreen(donorId: widget.donor.id ?? 0),
-                        ),
-                      );
-                      await _loadDonations();
-                    },
-                    child: const Text('Add First Donation'),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        
-        return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final donation = snapshot.data![index];
-              return _buildDonationItem(donation);
-            },
-            childCount: snapshot.data!.length,
           ),
         );
-      },
-    );
-  }
+      }
 
-  Widget _buildDonationItem(Donation donation) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+      final donations = snapshot.data ?? [];
+      
+      if (donations.isEmpty) {
+        return SliverToBoxAdapter(
+          child: Center(child: Text('No donations found for this donor.')),
+        );
+      }
+
+      return SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => _buildDonationItem(donations[index]),
+          childCount: donations.length,
+        ),
+      );
+    },
+  );
+}
+ Widget _buildDonationItem(Donation donation) {
+  return Card(
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: ListTile(
+      leading: const Icon(Icons.bloodtype, color: Colors.red),
+      title: Text(
+        donation.date ?? 'Date not available',
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      child: ListTile(
-        leading: const Icon(Icons.bloodtype, color: Colors.red),
-        title: Text(
-          donation.date ?? 'Unknown date',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (donation.hospital != null) Text('Hospital: ${donation.hospital}'),
-            if (donation.units != null) Text('Units: ${donation.units}'),
-          ],
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red),
-          onPressed: () => _deleteDonation(donation.id ?? 0),
-        ),
-        onTap: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DonationFormScreen(
-                donorId: widget.donor.id ?? 0,
-                donation: donation,
-              ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (donation.hospital != null) 
+            Text('Hospital: ${donation.hospital}'),
+          if (donation.units != null)
+            Text('Units: ${donation.units}'),
+          if (donation.notes != null && donation.notes!.isNotEmpty)
+            Text('Notes: ${donation.notes}'),
+        ],
+      ),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete, color: Colors.red),
+        onPressed: () => _deleteDonation(donation.id ?? 0),
+      ),
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DonationFormScreen(
+              donorId: widget.donor.id ?? 0,
+              donation: donation,
             ),
-          );
-          await _loadDonations();
-        },
-      ),
-    );
-  }
-
+          ),
+        );
+        await _loadDonations();
+      },
+    ),
+  );
+}
   Widget _buildInfoRow(IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
