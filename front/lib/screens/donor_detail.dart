@@ -163,6 +163,9 @@ Future<void> _deleteDonor() async {
               ),
             ),
             _buildDonationList(),
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 25),
+            ),
           ],
         ),
       ),
@@ -219,30 +222,36 @@ Future<void> _deleteDonor() async {
             if (donor.city != null) _buildInfoRow(Icons.location_city, donor.city!),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                 
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade700,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.add, color: Colors.white, size: 30),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DonationFormScreen(donorId: widget.donor.id ?? 0),
-                          ),
-                        );
-                        await _loadDonations();
-                      },
+              child: GestureDetector(
+                onTap:() async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DonationFormScreen(donorId: widget.donor.id ?? 0),
+                        ),
+                      );
+                      await _loadDonations();
+                    }, 
+                child: Container(
+                  width: MediaQuery.of(context).size.width -80,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade700,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Text(
+                     "Add Donation",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ],

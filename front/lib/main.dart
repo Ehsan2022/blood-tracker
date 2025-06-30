@@ -1,4 +1,5 @@
 import 'package:class_project/screens/donor_info.dart';
+import 'package:class_project/screens/settings.dart';
 import 'package:class_project/screens/stats.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +22,6 @@ class LifeBloodApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       title: 'LifeBlood',
@@ -53,11 +53,12 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Widget> _pages = [
-    const DonorListScreen(),
-    const StatsScreen(), 
-    const AboutScreen(),
-    const DonorInfoScreen(),
-  ];
+  const DonorListScreen(),
+  const StatsScreen(),
+  const AboutScreen(),
+  const DonorInfoScreen(),
+  const SettingsScreen(), 
+];
 
 @override
 Widget build(BuildContext context) {
@@ -102,14 +103,14 @@ Widget build(BuildContext context) {
     }
   }
 
-  Widget _buildAnimatedNavBar(int index) {
+ Widget _buildAnimatedNavBar(int index) {
   return Stack(
     alignment: Alignment.bottomCenter,
     clipBehavior: Clip.none,
     children: [
       // The red bottom navigation bar
       Container(
-        width: MediaQuery.of(context).size.width * 0.80, // Increased width to accommodate 4 items
+        width: MediaQuery.of(context).size.width * 0.85, // Slightly wider to accommodate 5 icons
         height: 130,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.only(
@@ -120,31 +121,35 @@ Widget build(BuildContext context) {
         ),
         child: Stack(
           children: [
-            // About Screen (left)
+            // About Screen (leftmost)
             Positioned(
-              left: 30,
+              left: 20,
               bottom: 16,
-              child: Center(
-                child: _buildNavItem(Icons.info, 2), // Changed index to 2
-              ),
+              child: _buildNavItem(Icons.info, 2),
             ),
-            // Donor List (center-left)
+             // Donor List (center)
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.20, 
-              bottom: 70,
+              left: MediaQuery.of(context).size.width * 0.20,
+              bottom: 55,
               child: _buildNavItem(Icons.people_alt_outlined, 0),
             ),
-            // Stats Screen (center-right)
+                 // Stats Screen (right-center)
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.45,
-              bottom: 70,
-              child: _buildNavItem(Icons.insights, 1), // New stats icon
+              left: MediaQuery.of(context).size.width * 0.37,
+              bottom: 75,
+              child: _buildNavItem(Icons.stacked_bar_chart, 1),
             ),
-            // Donor Info (right)
+            // Donor Info (rightmost)
             Positioned(
-              right: 30,
+              left: MediaQuery.of(context).size.width * 0.55,
+              bottom: 55,
+              child: _buildNavItem(Icons.medical_information_rounded, 3),
+            ),
+            // Settings (left-center)
+            Positioned(
+              right: 20,
               bottom: 16,
-              child: _buildNavItem(Icons.medical_information_rounded, 3), // Changed index to 3
+              child: _buildNavItem(Icons.settings, 4), 
             ),
           ],
         ),
@@ -162,15 +167,15 @@ Widget build(BuildContext context) {
         padding: const EdgeInsets.all( 8),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isSelected ? Colors.white.withOpacity(0.2) : Colors.transparent,
+          color: isSelected ? Colors.white.withOpacity(0.8) : Colors.white.withOpacity(0.1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
-              size: index == 1 ? 36 : 28, 
+              color: isSelected ? Colors.red : Colors.white.withOpacity(0.8),
+              size:30, 
             ),
             
           ],
