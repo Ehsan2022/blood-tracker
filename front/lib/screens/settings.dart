@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -12,14 +13,17 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _isDarkMode = false;
-  bool _isEnglish = true;
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final localizations = AppLocalizations.of(context)!;
+    final isEnglish = localeProvider.locale?.languageCode == 'en';
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.settings),
+        title: Text(localizations.settings),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -35,19 +39,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           _buildSettingItem(
             icon: Icons.share,
-            title: AppLocalizations.of(context)!.shareApp,
-            onTap: _shareApp,
+            title: localizations.shareApp,
+            onTap: () => _shareApp(context),
           ),
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.brightness_6,
-            title: AppLocalizations.of(context)!.darkMode,
+            title: localizations.darkMode,
             trailing: Switch(
               value: _isDarkMode,
               onChanged: (value) {
                 setState(() {
                   _isDarkMode = value;
-                  // Implement theme change logic here
+                  // TODO: Implement theme change
                 });
               },
               activeColor: Colors.red,
@@ -56,14 +60,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.language,
-            title: AppLocalizations.of(context)!.language,
+            title: localizations.language,
             trailing: Switch(
-              value: _isEnglish,
+              value: isEnglish,
               onChanged: (value) {
-                setState(() {
-                  _isEnglish = value;
-                  // Implement language change logic here
-                });
+                _changeLanguage(context, value ? 'en' : 'fa');
               },
               activeColor: Colors.red,
             ),
@@ -71,8 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.exit_to_app,
-            title: AppLocalizations.of(context)!.exitApp,
-            onTap: _exitApp,
+            title: localizations.exitApp,
+            onTap: () => _exitApp(context),
           ),
         ],
       ),
@@ -110,31 +111,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Future<void> _shareApp() async {
+  Future<void> _shareApp(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
     try {
-      await Share.share('Check out this awesome LifeBlood app!');
+      await Share.share(localizations.shareAppMessage);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to share')),
+        SnackBar(content: Text(localizations.shareError)),
       );
     }
   }
 
-  void _exitApp() {
+  void _changeLanguage(BuildContext context, String languageCode) {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    final localizations = AppLocalizations.of(context)!;
+
+    localeProvider.setLocale(Locale(languageCode));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(languageCode == 'en'
+            ? localizations.languageChangedToEnglish
+            : localizations.languageChangedToPersian),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _exitApp(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.exitApp),
-        content: Text(AppLocalizations.of(context)!.exitConfirmation),
+        title: Text(localizations.exitApp),
+        content: Text(localizations.exitConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel),
+            child: Text(localizations.cancel),
           ),
           TextButton(
             onPressed: () => SystemNavigator.pop(),
             child: Text(
-              AppLocalizations.of(context)!.exitApp,
+              localizations.exitApp,
               style: const TextStyle(color: Colors.red),
             ),
           ),
