@@ -11,42 +11,36 @@ import 'package:life_blood_donor/screens/stats.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(
-      DevicePreview(
-        enabled: !kReleaseMode,
-        builder: (context) => ChangeNotifierProvider(
-          create: (context) => LocaleProvider(),
-          child: const LifeBloodApp(),
-        ),
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  final localeProvider = LocaleProvider();
+  await localeProvider.loadLocale();
+
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => ChangeNotifierProvider(
+        create: (context) => localeProvider,
+        child: const LifeBloodApp(),
       ),
-    );
-
-class LocaleProvider with ChangeNotifier {
-  Locale? _locale;
-
-  Locale? get locale => _locale;
-
-  void setLocale(Locale locale) {
-    if (!AppLocalizations.supportedLocales.contains(locale)) return;
-    _locale = locale;
-    notifyListeners();
-  }
-
-  void clearLocale() {
-    _locale = null;
-    notifyListeners();
-  }
+    ),
+  );
 }
 
 class LifeBloodApp extends StatelessWidget {
   const LifeBloodApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     return Consumer<LocaleProvider>(
       builder: (context, localeProvider, child) {
         return MaterialApp(
+          // locale: DevicePreview.locale(context) ?? localeProvider.locale,
+          // locale: Locale('fa'),
+          locale: localeProvider.locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -54,8 +48,7 @@ class LifeBloodApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: DevicePreview.locale(context) ?? localeProvider.locale,
-          builder: DevicePreview.appBuilder,
+          
           title: 'LifeBlood',
           theme: appTheme.copyWith(
             cardTheme: appTheme.cardTheme.copyWith(
@@ -128,7 +121,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
       context,
       MaterialPageRoute(builder: (_) => const DonorFormScreen()),
     );
-
+    
     if (result != null && mounted) {
       setState(() {
         _currentIndex = 0;
