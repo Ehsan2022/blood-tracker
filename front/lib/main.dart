@@ -1,4 +1,5 @@
 import 'package:class_project/screens/donor_info.dart';
+import 'package:class_project/screens/stats.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
   final List<Widget> _pages = [
     const DonorListScreen(),
+    const StatsScreen(), 
     const AboutScreen(),
     const DonorInfoScreen(),
   ];
@@ -100,14 +102,14 @@ Widget build(BuildContext context) {
     }
   }
 
-Widget _buildAnimatedNavBar(int index) {
+  Widget _buildAnimatedNavBar(int index) {
   return Stack(
     alignment: Alignment.bottomCenter,
     clipBehavior: Clip.none,
     children: [
       // The red bottom navigation bar
       Container(
-        width: MediaQuery.of(context).size.width * 0.60,
+        width: MediaQuery.of(context).size.width * 0.80, // Increased width to accommodate 4 items
         height: 130,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.only(
@@ -118,23 +120,31 @@ Widget _buildAnimatedNavBar(int index) {
         ),
         child: Stack(
           children: [
+            // About Screen (left)
             Positioned(
-              left: 26,
+              left: 30,
               bottom: 16,
               child: Center(
-                child: _buildNavItem(Icons.info, 1),
+                child: _buildNavItem(Icons.info, 2), // Changed index to 2
               ),
             ),
+            // Donor List (center-left)
             Positioned(
-              left: 0, 
-              right: 0,
+              left: MediaQuery.of(context).size.width * 0.20, 
               bottom: 70,
               child: _buildNavItem(Icons.people_alt_outlined, 0),
             ),
+            // Stats Screen (center-right)
+            Positioned(
+              left: MediaQuery.of(context).size.width * 0.45,
+              bottom: 70,
+              child: _buildNavItem(Icons.insights, 1), // New stats icon
+            ),
+            // Donor Info (right)
             Positioned(
               right: 30,
-              bottom: 20,
-              child: _buildNavItem(Icons.medical_information_rounded, 2),
+              bottom: 16,
+              child: _buildNavItem(Icons.medical_information_rounded, 3), // Changed index to 3
             ),
           ],
         ),
@@ -142,7 +152,6 @@ Widget _buildAnimatedNavBar(int index) {
     ],
   );
 }
-
   Widget _buildNavItem(IconData icon, int index) {
     final isSelected = _currentIndex == index;
     return GestureDetector(

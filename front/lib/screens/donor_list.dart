@@ -26,7 +26,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
   void initState() {
     super.initState();
     _loadDonors();
-    _loadDonations(); // Added for donation count
+    _loadDonations(); // donation count
     _searchController.addListener(_filterDonors);
   }
 
@@ -75,7 +75,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
 
   Future<void> _handleRefresh() async {
     await _loadDonors();
-    await _loadDonations(); // Added for donation count
+    await _loadDonations(); // donation count
   }
 
   Future<void> _navigateToDetail(Donor donor) async {
@@ -91,121 +91,23 @@ class _DonorListScreenState extends State<DonorListScreen> {
     }
   }
 
-  Future<void> _deleteDonor(int id) async {
-    try {
-      await ApiService.deleteDonor(id);
-      if (!mounted) return;
-      await _loadDonors();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Donor deleted successfully'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-
-  Widget _buildStatItem(IconData icon, String label, int value) {
-    return Column(
-      children: [
-        Icon(icon, size: 40, color: Colors.red.shade700),
-        const SizedBox(height: 4),
-        Text(
-          value.toString(),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey.shade700,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatsCard() {
-    if (_allDonors.isEmpty) return const SizedBox();
-
-    final bloodGroups = _getBloodGroupCounts();
-    final totalDonors = _allDonors.length;
-    final totalDonations = _allDonations.length; 
-
-    return Card(
-      margin: const EdgeInsets.all(16),
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-              _buildStatItem(Icons.people, 'Total Donors', totalDonors),
-              _buildStatItem(Icons.bloodtype, 'Total Donations', totalDonations),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: Wrap(
-                alignment: WrapAlignment.spaceEvenly,
-                runAlignment: WrapAlignment.spaceBetween,
-                spacing: 20,
-                runSpacing: 10,
-                children: bloodGroups.entries.map((entry) {
-                return Chip(
-                  shadowColor: Colors.black,
-                  elevation: 5,
-                  label: Text('${entry.key} : ${entry.value}'),
-                  backgroundColor: Colors.white,
-                  labelStyle: TextStyle(
-                  color: Colors.red.shade900,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-                  ),
-                );
-                }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildDonorList() {
     return Column(
       children: [
-        _buildStatsCard(),
-        Expanded(
+        Expanded( 
           child: GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
-              mainAxisExtent: 180,
+              mainAxisExtent: 160,
             ),
             itemCount: _filteredDonors.length,
+            padding: const EdgeInsets.only(bottom: 150),
             itemBuilder: (context, index) {
               final donor = _filteredDonors[index];
               return _buildDonorCard(donor);
             },
           ),
         ),
-        SizedBox(height: 20,)
       ],
     );
   }
