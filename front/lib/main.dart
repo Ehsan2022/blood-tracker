@@ -110,7 +110,7 @@ Widget build(BuildContext context) {
     children: [
       // The red bottom navigation bar
       Container(
-        width: MediaQuery.of(context).size.width * 0.85, // Slightly wider to accommodate 5 icons
+        width: 340, 
         height: 130,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.only(
@@ -123,32 +123,32 @@ Widget build(BuildContext context) {
           children: [
             // About Screen (leftmost)
             Positioned(
-              left: 20,
-              bottom: 16,
+              left: 25,
+              bottom: 10,
               child: _buildNavItem(Icons.info, 2),
             ),
              // Donor List (center)
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.20,
+              left: 75,
               bottom: 55,
               child: _buildNavItem(Icons.people_alt_outlined, 0),
             ),
                  // Stats Screen (right-center)
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.37,
+              left:145, 
               bottom: 75,
               child: _buildNavItem(Icons.stacked_bar_chart, 1),
             ),
             // Donor Info (rightmost)
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.55,
+              right: 75,
               bottom: 55,
               child: _buildNavItem(Icons.medical_information_rounded, 3),
             ),
             // Settings (left-center)
             Positioned(
-              right: 20,
-              bottom: 16,
+              right: 25,
+              bottom: 10,
               child: _buildNavItem(Icons.settings, 4), 
             ),
           ],

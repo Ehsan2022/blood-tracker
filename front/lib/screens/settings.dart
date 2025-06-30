@@ -34,13 +34,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           _buildSettingItem(
             icon: Icons.share,
-            title: _isEnglish ? 'Share App' : 'اپلیکیشن شریک کړئ',
+            title: _isEnglish ? 'Share App' : 'اپلیکیشن را شریک کنید',
             onTap: _shareApp,
           ),
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.brightness_6,
-            title: _isEnglish ? 'Dark Mode' : 'تاریخ حالت',
+            title: _isEnglish ? 'Dark Mode' : 'حالت تاریک',
             trailing: Switch(
               value: _isDarkMode,
               onChanged: (value) {
@@ -55,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.language,
-            title: _isEnglish ? 'Language (English/پښتو)' : 'ژبه (English/پښتو)',
+            title: _isEnglish ? 'Language (English/فارسی)' : 'زبان (English/پښتو)',
             trailing: Switch(
               value: _isEnglish,
               onChanged: (value) {
@@ -70,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.exit_to_app,
-            title: _isEnglish ? 'Exit App' : 'اپلیکیشن بند کړئ',
+            title: _isEnglish ? 'Exit App' : 'خروج از اپلیکیشن',
             onTap: _exitApp,
           ),
         ],
