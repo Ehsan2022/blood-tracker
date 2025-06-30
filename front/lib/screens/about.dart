@@ -66,7 +66,7 @@ class AboutScreen extends StatelessWidget {
               AppLocalizations.of(context)!.acknowledgementsText,
               Icons.volunteer_activism,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 120),
           ],
         ),
       ),

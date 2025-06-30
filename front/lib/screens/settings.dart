@@ -1,44 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:life_blood_donor/locale_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-class LocaleProvider with ChangeNotifier {
-  Locale _locale = const Locale('en');
-  static const String _localeKey = 'locale';
-
-  Locale get locale => _locale;
-
-  Future<void> loadLocale() async {
-    final prefs = await SharedPreferences.getInstance();
-    final localeCode = prefs.getString(_localeKey);
-    if (localeCode != null) {
-      _locale = Locale(localeCode);
-      notifyListeners();
-    }
-  }
-
-  Future<void> setLocale(Locale locale) async {
-    if (!AppLocalizations.supportedLocales.contains(locale)) return;
-    
-    _locale = locale;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_localeKey, locale.languageCode);
-    notifyListeners();
-  }
-
-  Future<void> toggleLanguage() async {
-    _locale = _locale.languageCode == 'en' 
-        ? const Locale('fa') 
-        : const Locale('en');
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_localeKey, _locale.languageCode);
-    notifyListeners();
-  }
-}
-
+import 'package:share_plus/share_plus.dart' show Share;
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -69,55 +34,90 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildSettingItem(
-            icon: Icons.share,
-            title: localizations.shareApp,
-            onTap: () => _shareApp(context),
-          ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.brightness_6,
-            title: localizations.darkMode,
-            trailing: Switch(
-              value: _isDarkMode,
-              onChanged: (value) => setState(() => _isDarkMode = value),
-              activeColor: Colors.red,
-            ),
-          ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.language,
-            title: localizations.language,
-            trailing: Switch(
-              value: isEnglish,
-              onChanged: (value) async {
-                await localeProvider.toggleLanguage();
-                _showLanguageChangedSnackbar(context, value);
-              },
-              activeColor: Colors.red,
-            ),
-            subtitle: Text(
-              isEnglish ? 'English' : 'فارسی',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 14,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Added Hero icon section
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Hero(
+                tag: 'settings-icon',
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Colors.red.shade50,
+                  child: Icon(
+                    Icons.settings,
+                    size: 60,
+                    color: Colors.red,
+                  ),
+                ),
               ),
             ),
-          ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.exit_to_app,
-            title: localizations.exitApp,
-            onTap: () => _exitApp(context),
-          ),
-        ],
+            const SizedBox(height: 20),
+            Text(
+              localizations.settings,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.red.shade700,
+              ),
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  _buildSettingItem(
+                    icon: Icons.share,
+                    title: localizations.shareApp,
+                    onTap: () => _shareApp(context),
+                  ),
+                  _buildDivider(),
+                  _buildSettingItem(
+                    icon: Icons.brightness_6,
+                    title: localizations.darkMode,
+                    trailing: Switch(
+                      value: _isDarkMode,
+                      onChanged: (value) => setState(() => _isDarkMode = value),
+                      activeColor: Colors.red,
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildSettingItem(
+                    icon: Icons.language,
+                    title: localizations.language,
+                    trailing: Switch(
+                      value: isEnglish,
+                      onChanged: (value) async {
+                        await localeProvider.toggleLanguage();
+                      },
+                      activeColor: Colors.red,
+                    ),
+                    subtitle: Text(
+                      isEnglish ? 'English' : 'فارسی',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildSettingItem(
+                    icon: Icons.exit_to_app,
+                    title: localizations.exitApp,
+                    onTap: () => _exitApp(context),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  // Rest of your existing methods (_buildSettingItem, _buildDivider, etc.) remain the same
   Widget _buildSettingItem({
     required IconData icon,
     required String title,
@@ -151,17 +151,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showLanguageChangedSnackbar(BuildContext context, bool toEnglish) {
-    final localizations = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(toEnglish
-            ? localizations.languageChangedToEnglish
-            : localizations.languageChangedToPersian),
-        duration: const Duration(seconds: 1),
-      ),
-    );
-  }
 
   Future<void> _shareApp(BuildContext context) async {
     final localizations = AppLocalizations.of(context)!;

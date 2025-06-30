@@ -84,7 +84,7 @@ class DonorInfoScreen extends StatelessWidget {
               AppLocalizations.of(context)!.emergencyDetails,
               Icons.warning_amber,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 120),
           ],
         ),
       ),

@@ -229,6 +229,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     ),
                   ),
                 ),
+                SizedBox(height: 130),
               ],
             ),
           );
