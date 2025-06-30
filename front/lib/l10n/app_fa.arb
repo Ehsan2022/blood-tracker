@@ -70,5 +70,9 @@
   "saveDonor": "ذخیره اهداکننده",
   "male": "مرد",
   "female": "زن",
-  "donationDate": "تاریخ اهدا"
+  "donationDate": "تاریخ اهدا",
+  "shareAppMessage": "این برنامه عالی LifeBlood را بررسی کنید!",
+  "shareError": "اشتراک گذاری ناموفق بود",
+  "languageChangedToEnglish": "زبان به انگلیسی تغییر کرد",
+  "languageChangedToPersian": "زبان به فارسی تغییر کرد"
 }

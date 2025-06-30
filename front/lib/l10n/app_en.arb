@@ -70,5 +70,10 @@
   "saveDonor": "SAVE DONOR",
   "male": "Male",
   "female": "Female",
-  "donationDate": "Donation Date"
+  "donationDate": "Donation Date",
+  "shareAppMessage": "Check out this awesome LifeBlood app!",
+  "shareError": "Failed to share",
+  "languageChangedToEnglish": "Language changed to English",
+  "languageChangedToPersian": "Language changed to Persian"
+
 }
