@@ -19,14 +19,11 @@ class _DonorListScreenState extends State<DonorListScreen> {
   List<Donor> _filteredDonors = [];
   final TextEditingController _searchController = TextEditingController();
   
-  // donation count
-  List<Donation> _allDonations = [];
 
   @override
   void initState() {
     super.initState();
     _loadDonors();
-    _loadDonations(); // donation count
     _searchController.addListener(_filterDonors);
   }
 
@@ -38,18 +35,6 @@ class _DonorListScreenState extends State<DonorListScreen> {
         return donors;
       });
     });
-  }
-
-  // donation count
-  Future<void> _loadDonations() async {
-    try {
-      final donations = await ApiService.fetchDonations();
-      setState(() {
-        _allDonations = donations;
-      });
-    } catch (e) {
-      debugPrint('Error loading donations: $e');
-    }
   }
 
   void _filterDonors() {
@@ -64,18 +49,9 @@ class _DonorListScreenState extends State<DonorListScreen> {
     });
   }
 
-  Map<String, int> _getBloodGroupCounts() {
-    final counts = <String, int>{};
-    for (var donor in _allDonors) {
-      final bg = donor.bloodGroup;
-      counts[bg] = (counts[bg] ?? 0) + 1;
-    }
-    return counts;
-  }
 
   Future<void> _handleRefresh() async {
     await _loadDonors();
-    await _loadDonations(); // donation count
   }
 
   Future<void> _navigateToDetail(Donor donor) async {
