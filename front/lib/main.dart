@@ -2,7 +2,6 @@ import 'package:class_project/screens/donor_info.dart';
 import 'package:flutter/material.dart';
 import 'package:class_project/screens/about.dart';
 import 'package:class_project/screens/donor_form.dart';
-import 'package:class_project/screens/donor_detail.dart';
 import 'package:class_project/screens/donor_list.dart';
 import 'app_theme.dart';
 
@@ -64,7 +63,7 @@ Widget build(BuildContext context) {
         bottomNavigationBar: _buildAnimatedNavBar(_currentIndex),
       ),
       Positioned(
-        left: MediaQuery.of(context).size.width / 2 - 30, // Center horizontally
+        left: MediaQuery.of(context).size.width / 2 - 28, // Center horizontally
         bottom: 5, 
         child: FloatingActionButton(
           onPressed: () => _navigateToDonorForm(context),
@@ -93,7 +92,6 @@ Widget build(BuildContext context) {
     }
   }
 
-@override
 Widget _buildAnimatedNavBar(int index) {
   return Stack(
     alignment: Alignment.bottomCenter,
@@ -108,24 +106,27 @@ Widget _buildAnimatedNavBar(int index) {
             topLeft: Radius.circular(150),
             topRight: Radius.circular(150),
           ),
-          color: Colors.red
+          color: Colors.red,
         ),
         child: Stack(
           children: [
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.325 - 100,
-              bottom: 20, 
+              left: 26,
+              bottom: 16,
+              child: Center(
+                child: _buildNavItem(Icons.info, 1),
+              ),
+            ),
+            Positioned(
+              left: 0, 
+              right: 0,
+              bottom: 70,
               child: _buildNavItem(Icons.people_alt_outlined, 0),
             ),
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.325 - 38, // Center calculation
-              bottom: 70, 
-              child: _buildNavItem(Icons.info, 1,),
-            ),
-            Positioned(
-              right: MediaQuery.of(context).size.width * 0.325 - 100 ,
-              bottom: 20, 
-              child:_buildNavItem(Icons.medical_information_rounded, 2),
+              right: 30,
+              bottom: 20,
+              child: _buildNavItem(Icons.medical_information_rounded, 2),
             ),
           ],
         ),

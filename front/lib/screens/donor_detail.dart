@@ -99,7 +99,6 @@ Future<void> _deleteDonor() async {
       duration: Duration(seconds: 3),
     ),
   );
-      // Return true to indicate success to previous screen
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
@@ -222,19 +221,7 @@ Future<void> _deleteDonor() async {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 children: [
-                  Icon(Icons.calendar_today, color: Colors.red.shade700, size: 32),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      donor.lastDonation != null 
-                          ? 'Last donated: ${donor.lastDonation!.toLocal().toString().split(' ')[0]}'
-                          : 'Never donated',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                 
                   Container(
                     width: 60,
                     height: 60,

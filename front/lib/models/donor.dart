@@ -8,8 +8,7 @@ class Donor {
   final String bloodGroup;
   final String? phone;
   final String? city;
-  final DateTime? lastDonation;
-   final int donationCount;
+  final int donorCount;
   final List<Donation>? donations;
 
   Donor( {
@@ -20,9 +19,8 @@ class Donor {
     required this.bloodGroup,
     this.phone,
     this.city,
-    this.lastDonation,
     this.donations,
-    this.donationCount =0,
+    this.donorCount =0,
   });
 
   factory Donor.fromJson(Map<String, dynamic> json) {
@@ -34,9 +32,6 @@ class Donor {
       bloodGroup: json['bloodGroup'],
       phone: json['phone'],
       city: json['city'],
-      lastDonation: json['lastDonation'] != null 
-          ? DateTime.parse(json['lastDonation']) 
-          : null,
     );
   }
 
@@ -49,7 +44,6 @@ class Donor {
       'bloodGroup': bloodGroup,
       'phone': phone,
       'city': city,
-      'lastDonation': lastDonation?.toIso8601String(),
     };
   }
 }

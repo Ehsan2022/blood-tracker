@@ -1,3 +1,4 @@
+import 'package:class_project/models/donation.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import '../models/donor.dart';
@@ -17,11 +18,16 @@ class _DonorListScreenState extends State<DonorListScreen> {
   List<Donor> _allDonors = [];
   List<Donor> _filteredDonors = [];
   final TextEditingController _searchController = TextEditingController();
+  
+  // Added for donation count
+  late Future<List<Donation>> _donationsFuture;
+  List<Donation> _allDonations = [];
 
   @override
   void initState() {
     super.initState();
     _loadDonors();
+    _loadDonations(); // Added for donation count
     _searchController.addListener(_filterDonors);
   }
 
@@ -35,12 +41,25 @@ class _DonorListScreenState extends State<DonorListScreen> {
     });
   }
 
+  // Added for donation count
+  Future<void> _loadDonations() async {
+    try {
+      final donations = await ApiService.fetchDonations();
+      setState(() {
+        _allDonations = donations;
+      });
+    } catch (e) {
+      debugPrint('Error loading donations: $e');
+    }
+  }
+
   void _filterDonors() {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredDonors = _allDonors.where((donor) {
         return donor.name.toLowerCase().contains(query) ||
             (donor.bloodGroup.toLowerCase().contains(query)) ||
+            (donor.phone!.contains(query)) ||
             (donor.city?.toLowerCase().contains(query) ?? false);
       }).toList();
     });
@@ -55,12 +74,9 @@ class _DonorListScreenState extends State<DonorListScreen> {
     return counts;
   }
 
-  int _getTotalDonations() {
-    return _allDonors.fold(0, (sum, donor) => sum + (donor.donationCount ?? 0));
-  }
-
   Future<void> _handleRefresh() async {
     await _loadDonors();
+    await _loadDonations(); // Added for donation count
   }
 
   Future<void> _navigateToDetail(Donor donor) async {
@@ -125,7 +141,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
 
     final bloodGroups = _getBloodGroupCounts();
     final totalDonors = _allDonors.length;
-    final totalDonations = _getTotalDonations();
+    final totalDonations = _allDonations.length; 
 
     return Card(
       margin: const EdgeInsets.all(16),
@@ -137,29 +153,35 @@ class _DonorListScreenState extends State<DonorListScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+            children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildStatItem(Icons.people, 'Total Donors', totalDonors),
-                _buildStatItem(Icons.bloodtype, 'Total Donations', totalDonations),
+              _buildStatItem(Icons.people, 'Total Donors', totalDonors),
+              _buildStatItem(Icons.bloodtype, 'Total Donations', totalDonations),
               ],
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 20,
-              runSpacing: 8,
-              children: bloodGroups.entries.map((entry) {
+            Center(
+              child: Wrap(
+                alignment: WrapAlignment.spaceEvenly,
+                runAlignment: WrapAlignment.spaceBetween,
+                spacing: 20,
+                runSpacing: 10,
+                children: bloodGroups.entries.map((entry) {
                 return Chip(
+                  shadowColor: Colors.black,
+                  elevation: 5,
                   label: Text('${entry.key} : ${entry.value}'),
                   backgroundColor: Colors.white,
                   labelStyle: TextStyle(
-                    color: Colors.red.shade900,
-                    fontWeight: FontWeight.bold,
+                  color: Colors.red.shade900,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16
                   ),
-                 
                 );
-              }).toList(),
+                }).toList(),
+              ),
             ),
           ],
         ),
@@ -184,6 +206,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
             },
           ),
         ),
+        SizedBox(height: 20,)
       ],
     );
   }
@@ -217,14 +240,14 @@ class _DonorListScreenState extends State<DonorListScreen> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(18.0),
                 child: CircleAvatar(
-                  radius: 30,
+                  radius: 20,
                   backgroundColor: Colors.red,
                   child: Text(
-                    donor.bloodGroup ?? '?',
+                    donor.bloodGroup,
                     style: const TextStyle(
-                      fontSize: 36,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -366,11 +389,12 @@ class _DonorListScreenState extends State<DonorListScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade700,
+              padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 22),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('Add Donor', style: TextStyle(color: Colors.white)),
+            child: const Text('Add Donor', style: TextStyle(color: Colors.white,fontSize: 16,fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -408,7 +432,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.9),
                 prefixIcon: const Icon(Icons.search, color: Colors.red),
-                hintText: 'Search donors...',
+                hintText: 'Search donor\'s name, phone, city...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,

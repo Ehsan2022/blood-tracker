@@ -5,6 +5,8 @@ class Donation {
   final String? hospital;
   final int? units;
   final String? notes;
+  final int donationCount;
+
 
   Donation({
     this.id,
@@ -13,6 +15,7 @@ class Donation {
     required this.hospital,
     required this.units,
     required this.notes,
+    this.donationCount = 0,
   });
 
   factory Donation.fromJson(Map<String, dynamic> json) {
@@ -22,7 +25,7 @@ class Donation {
     hospital: json['hospital']?.toString(),
     units: json['units'] as int?,
     notes: json['notes']?.toString(),
-    donorId: json['donor'] != null ? (json['donor'] is Map ? json['donor']['id'] : json['donor']) as int : 0, // Default to 0 if not present
+    donorId: json['donor'] != null ? (json['donor'] is Map ? json['donor']['id'] : json['donor']) as int : 0, 
   );
 }
 

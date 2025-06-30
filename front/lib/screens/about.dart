@@ -42,14 +42,10 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            FutureBuilder<String>(
-              future: _getAppVersion(),
-              builder: (context, snapshot) {
-                return Text(
-                  snapshot.hasData ? 'Version ${snapshot.data}' : 'Version 1.0.0',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                );
-              },
+            Text(
+              'Version 1.0.0\nDeveloped by: Mohammad Ehsan Nicksarisht\n',
+              style:  TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
             _buildAboutSection(
@@ -69,16 +65,16 @@ class AboutScreen extends StatelessWidget {
             _buildAboutSection(
               'Contact Us',
               'For support or partnership inquiries:\n\n'
-              'Email: support@lifeblood.app\n'
-              'Phone: +1 (555) 123-4567\n'
-              'Address: 123 Health St, Medical City',
+              'Email: ehsan.nick16@gmail.com\n'
+              'Phone: +93 790 234 314\n'
+              'Address: Herat city, Herat, Afghanistan\n'              ,
               Icons.contact_mail,
             ),
             const SizedBox(height: 20),
             _buildAboutSection(
               'Acknowledgements',
               'We thank:\n\n'
-              '• Our dedicated blood donors\n• Medical professionals\n• Open source contributors\n• The Flutter community',
+              '• Our dedicated blood donors\n• Medical professionals\n• Open source contributors\n• Community partners\n',
               Icons.volunteer_activism,
             ),
             SizedBox(height: 130),
@@ -125,8 +121,4 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Future<String> _getAppVersion() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return '1.2.0';
-  }
 }

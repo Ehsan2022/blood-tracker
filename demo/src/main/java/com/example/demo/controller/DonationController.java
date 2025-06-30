@@ -31,6 +31,11 @@ public class DonationController {
         this.donorRepository = donorRepository;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Donation>> getAll() {
+        return ResponseEntity.ok(donationRepository.findAll());
+    }
+
     @GetMapping("/donor/{donorId}")
     public ResponseEntity<List<Donation>> getByDonor(@PathVariable Long donorId) {
         return ResponseEntity.ok(donationRepository.findByDonorId(donorId));
