@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import '../models/donor.dart';
 import '../services/api_service.dart';
@@ -17,7 +18,6 @@ class _DonorListScreenState extends State<DonorListScreen> {
   List<Donor> _allDonors = [];
   List<Donor> _filteredDonors = [];
   final TextEditingController _searchController = TextEditingController();
-  
 
   @override
   void initState() {
@@ -48,7 +48,6 @@ class _DonorListScreenState extends State<DonorListScreen> {
     });
   }
 
-
   Future<void> _handleRefresh() async {
     await _loadDonors();
   }
@@ -64,27 +63,6 @@ class _DonorListScreenState extends State<DonorListScreen> {
     if (result == true) {
       await _loadDonors();
     }
-  }
-
-  Widget _buildDonorList() {
-    return Column(
-      children: [
-        Expanded( 
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              mainAxisExtent: 160,
-            ),
-            itemCount: _filteredDonors.length,
-            padding: const EdgeInsets.only(bottom: 150),
-            itemBuilder: (context, index) {
-              final donor = _filteredDonors[index];
-              return _buildDonorCard(donor);
-            },
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildDonorCard(Donor donor) {
@@ -132,7 +110,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
               ),
             ),
             Expanded(
-              child: Container(
+              child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,10 +130,8 @@ class _DonorListScreenState extends State<DonorListScreen> {
                         Icon(Icons.cake, size: 16, color: Colors.red.shade700),
                         const SizedBox(width: 4),
                         Text(
-                          '${donor.age} years',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: 16,
-                              ),
+                          '${donor.age} ${AppLocalizations.of(context)!.years}',
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
                     ),
@@ -165,10 +141,8 @@ class _DonorListScreenState extends State<DonorListScreen> {
                         Icon(Icons.place, size: 16, color: Colors.red.shade700),
                         const SizedBox(width: 4),
                         Text(
-                          donor.city ?? 'Unknown City',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: 16,
-                              ),
+                          donor.city ?? 'Unknown',
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
                     ),
@@ -178,15 +152,9 @@ class _DonorListScreenState extends State<DonorListScreen> {
                         children: [
                           Icon(Icons.phone, size: 16, color: Colors.red.shade700),
                           const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              donor.phone!,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontSize: 16,
-                                  ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          Text(
+                            donor.phone!,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),
@@ -209,7 +177,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
           Icon(Icons.error_outline, size: 48, color: Colors.red.shade700),
           const SizedBox(height: 16),
           Text(
-            'Failed to load donors',
+            AppLocalizations.of(context)!.failedToLoadDonors,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
@@ -221,7 +189,10 @@ class _DonorListScreenState extends State<DonorListScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('Retry', style: TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.retry,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -241,15 +212,15 @@ class _DonorListScreenState extends State<DonorListScreen> {
           const SizedBox(height: 16),
           Text(
             _searchController.text.isEmpty
-                ? 'No donors found'
-                : 'No matching donors',
+                ? AppLocalizations.of(context)!.noDonorsFound
+                : AppLocalizations.of(context)!.noMatchingDonors,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
             _searchController.text.isEmpty
-                ? 'Add your first donor'
-                : 'Try a different search term',
+                ? AppLocalizations.of(context)!.addFirstDonor
+                : AppLocalizations.of(context)!.tryDifferentSearch,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 16),
@@ -270,7 +241,14 @@ class _DonorListScreenState extends State<DonorListScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('Add Donor', style: TextStyle(color: Colors.white,fontSize: 16,fontWeight: FontWeight.bold)),
+            child: Text(
+              AppLocalizations.of(context)!.addDonor,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -278,16 +256,11 @@ class _DonorListScreenState extends State<DonorListScreen> {
   }
 
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.donors),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -297,7 +270,6 @@ class _DonorListScreenState extends State<DonorListScreen> {
             ),
           ),
         ),
-        elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0),
           child: Padding(
@@ -308,7 +280,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.9),
                 prefixIcon: const Icon(Icons.search, color: Colors.red),
-                hintText: 'Search donor\'s name, phone, city...',
+                hintText: AppLocalizations.of(context)!.searchHint,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -338,7 +310,17 @@ class _DonorListScreenState extends State<DonorListScreen> {
             if (!snapshot.hasData || _filteredDonors.isEmpty) {
               return _buildEmptyState();
             }
-            return _buildDonorList();
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 1,
+                mainAxisExtent: 160,
+              ),
+              itemCount: _filteredDonors.length,
+              padding: const EdgeInsets.only(bottom: 150),
+              itemBuilder: (context, index) {
+                return _buildDonorCard(_filteredDonors[index]);
+              },
+            );
           },
         ),
       ),

@@ -1,4 +1,5 @@
-import 'package:class_project/models/donation.dart';
+
+import 'package:life_blood_donor/models/donation.dart';
 
 class Donor {
   final int? id;

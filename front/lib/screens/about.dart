@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -8,7 +9,7 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('About LifeBlood'),
+        title: Text(AppLocalizations.of(context)!.about),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -41,50 +42,38 @@ class AboutScreen extends StatelessWidget {
                 color: Colors.red.shade700,
               ),
             ),
-            const SizedBox(height: 5),
-            Text(
-              'Version 1.0.0\nDeveloped by: Mohammad Ehsan Nicksarisht\n',
-              style:  TextStyle(fontSize: 16, color: Colors.grey.shade600),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 30),
-            _buildAboutSection(
-              'About the App',
-              'LifeBlood helps blood banks manage donors efficiently with:\n\n'
-              '• Donor profiles management\n• Blood type tracking\n• Donation history\n• Analytics dashboard',
+            _buildAboutCard(
+              AppLocalizations.of(context)!.aboutApp,
+              AppLocalizations.of(context)!.appDescription,
               Icons.bloodtype,
             ),
             const SizedBox(height: 20),
-            _buildAboutSection(
-              'Our Mission',
-              'To connect blood donors with recipients quickly and efficiently, '
-              'ensuring no one suffers due to lack of blood availability.',
+            _buildAboutCard(
+              AppLocalizations.of(context)!.ourMission,
+              AppLocalizations.of(context)!.missionDescription,
               Icons.medical_services,
             ),
             const SizedBox(height: 20),
-            _buildAboutSection(
-              'Contact Us',
-              'For support or partnership inquiries:\n\n'
-              'Email: ehsan.nick16@gmail.com\n'
-              'Phone: +93 790 234 314\n'
-              'Address: Herat city, Herat, Afghanistan\n'              ,
+            _buildAboutCard(
+              AppLocalizations.of(context)!.contactUs,
+              AppLocalizations.of(context)!.contactDetails,
               Icons.contact_mail,
             ),
             const SizedBox(height: 20),
-            _buildAboutSection(
-              'Acknowledgements',
-              'We thank:\n\n'
-              '• Our dedicated blood donors\n• Medical professionals\n• Open source contributors\n• Community partners\n',
+            _buildAboutCard(
+              AppLocalizations.of(context)!.acknowledgements,
+              AppLocalizations.of(context)!.acknowledgementsText,
               Icons.volunteer_activism,
             ),
-            SizedBox(height: 130),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAboutSection(String title, String content, IconData icon) {
+  Widget _buildAboutCard(String title, String content, IconData icon) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -114,11 +103,9 @@ class AboutScreen extends StatelessWidget {
               content,
               style: const TextStyle(fontSize: 16, height: 1.5),
             ),
-
           ],
         ),
       ),
     );
   }
-
 }

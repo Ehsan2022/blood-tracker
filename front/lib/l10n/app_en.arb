@@ -62,6 +62,7 @@
   "editDonor": "Edit Donor",
   "fullName": "Full Name",
   "age": "Age",
+  "years": "Years",
   "gender": "Gender",
   "bloodGroup": "Blood Group",
   "phoneNumber": "Phone Number",

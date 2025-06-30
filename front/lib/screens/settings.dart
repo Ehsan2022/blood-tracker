@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(_isEnglish ? 'Settings' : 'تنظیمات'),
+        title: Text(AppLocalizations.of(context)!.settings),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -34,13 +35,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           _buildSettingItem(
             icon: Icons.share,
-            title: _isEnglish ? 'Share App' : 'اپلیکیشن را شریک کنید',
+            title: AppLocalizations.of(context)!.shareApp,
             onTap: _shareApp,
           ),
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.brightness_6,
-            title: _isEnglish ? 'Dark Mode' : 'حالت تاریک',
+            title: AppLocalizations.of(context)!.darkMode,
             trailing: Switch(
               value: _isDarkMode,
               onChanged: (value) {
@@ -55,7 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.language,
-            title: _isEnglish ? 'Language (English/فارسی)' : 'زبان (English/پښتو)',
+            title: AppLocalizations.of(context)!.language,
             trailing: Switch(
               value: _isEnglish,
               onChanged: (value) {
@@ -70,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.exit_to_app,
-            title: _isEnglish ? 'Exit App' : 'خروج از اپلیکیشن',
+            title: AppLocalizations.of(context)!.exitApp,
             onTap: _exitApp,
           ),
         ],
@@ -111,14 +112,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _shareApp() async {
     try {
-      await Share.share(
-        _isEnglish 
-          ? 'Check out this awesome LifeBlood app!'
-          : 'د ژوند وینه ښه اپلیکیشن وګورئ!',
-      );
+      await Share.share('Check out this awesome LifeBlood app!');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_isEnglish ? 'Failed to share' : 'شریکولو کې ناکام')),
+        SnackBar(content: Text('Failed to share')),
       );
     }
   }
@@ -127,22 +124,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(_isEnglish ? 'Exit App' : 'اپلیکیشن بند کړئ'),
-        content: Text(
-          _isEnglish 
-            ? 'Are you sure you want to exit?'
-            : 'ایا تاسو ډاډه یاست چې وتل غواړئ؟',
-        ),
+        title: Text(AppLocalizations.of(context)!.exitApp),
+        content: Text(AppLocalizations.of(context)!.exitConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(_isEnglish ? 'Cancel' : 'لغوه کړئ'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => SystemNavigator.pop(),
             child: Text(
-              _isEnglish ? 'Exit' : 'وتل',
-              style: TextStyle(color: Colors.red),
+              AppLocalizations.of(context)!.exitApp,
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/donor.dart';
 import '../models/donation.dart';
 import '../services/api_service.dart';
@@ -44,128 +45,12 @@ class _StatsScreenState extends State<StatsScreen> {
     return counts;
   }
 
-  Widget _buildStatItem(IconData icon, String label, int value) {
-    return Column(
-      children: [
-        Icon(icon, size: 50, color: Colors.red.shade700),
-        const SizedBox(height: 4),
-        Text(
-          value.toString(),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey.shade700,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBloodGroupChart() {
-    final bloodGroups = _getBloodGroupCounts();
-    final maxCount = bloodGroups.values.reduce((a, b) => a > b ? a : b);
-
-    return Card(
-      margin: const EdgeInsets.all(16),
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Blood Group Distribution',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...bloodGroups.entries.map((entry) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 60,
-                      child: Text(
-                        entry.key,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: LinearProgressIndicator(
-                        value: entry.value / maxCount,
-                        backgroundColor: Colors.grey.shade200,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.red.shade700,
-                        ),
-                        minHeight: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 40),
-                    Text(
-                      entry.value.toString(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatsCard() {
-    final totalDonors = _allDonors.length;
-    final totalDonations = _allDonations.length;
-    final bloodGroups = _getBloodGroupCounts();
-
-    return Card(
-      margin: const EdgeInsets.all(16),
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildStatItem(Icons.people, 'Total Donors', totalDonors),
-                _buildStatItem(Icons.bloodtype, 'Total Donations', totalDonations),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Statistics'),
+        title: Text(AppLocalizations.of(context)!.statistics),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -190,24 +75,68 @@ class _StatsScreenState extends State<StatsScreen> {
                 children: [
                   const Icon(Icons.error_outline, size: 48, color: Colors.red),
                   const SizedBox(height: 16),
-                  const Text('Failed to load statistics'),
+                  Text(AppLocalizations.of(context)!.failedToLoadDonors),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadData,
-                    child: const Text('Retry'),
+                    child: Text(AppLocalizations.of(context)!.retry),
                   ),
                 ],
               ),
             );
           }
 
+          final bloodGroups = _getBloodGroupCounts();
+          final maxCount = bloodGroups.values.reduce((a, b) => a > b ? a : b);
+
           return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _buildStatsCard(),
-                _buildBloodGroupChart(),
                 Card(
-                  margin: const EdgeInsets.all(16),
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: [
+                            Icon(Icons.people, size: 50, color: Colors.red.shade700),
+                            const SizedBox(height: 4),
+                            Text(
+                              _allDonors.length.toString(),
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(AppLocalizations.of(context)!.totalDonors),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Icon(Icons.bloodtype, size: 50, color: Colors.red.shade700),
+                            const SizedBox(height: 4),
+                            Text(
+                              _allDonations.length.toString(),
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(AppLocalizations.of(context)!.totalDonations),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
                   elevation: 8,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -217,9 +146,68 @@ class _StatsScreenState extends State<StatsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Quick Facts',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.bloodGroupDistribution,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ...bloodGroups.entries.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 60,
+                                  child: Text(
+                                    entry.key,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: LinearProgressIndicator(
+                                    value: entry.value / maxCount,
+                                    backgroundColor: Colors.grey.shade200,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.red.shade700,
+                                    ),
+                                    minHeight: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 40),
+                                Text(
+                                  entry.value.toString(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.quickFacts,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -227,15 +215,15 @@ class _StatsScreenState extends State<StatsScreen> {
                         const SizedBox(height: 16),
                         _buildFactItem(
                           Icons.favorite,
-                          'One donation can save up to 3 lives',
+                          AppLocalizations.of(context)!.fact1,
                         ),
                         _buildFactItem(
                           Icons.access_time,
-                          'Whole blood can be donated every 56 days',
+                          AppLocalizations.of(context)!.fact2,
                         ),
                         _buildFactItem(
                           Icons.monitor_heart,
-                          'Regular donation reduces risk of heart disease',
+                          AppLocalizations.of(context)!.fact3,
                         ),
                       ],
                     ),

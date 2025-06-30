@@ -1,12 +1,13 @@
-import 'package:class_project/screens/donor_info.dart';
-import 'package:class_project/screens/settings.dart';
-import 'package:class_project/screens/stats.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:class_project/screens/about.dart';
-import 'package:class_project/screens/donor_form.dart';
-import 'package:class_project/screens/donor_list.dart';
+import 'package:life_blood_donor/screens/about.dart';
+import 'package:life_blood_donor/screens/donor_form.dart';
+import 'package:life_blood_donor/screens/donor_info.dart';
+import 'package:life_blood_donor/screens/donor_list.dart';
+import 'package:life_blood_donor/screens/settings.dart';
+import 'package:life_blood_donor/screens/stats.dart';
+
 import 'app_theme.dart';
 
 void main() => runApp(
