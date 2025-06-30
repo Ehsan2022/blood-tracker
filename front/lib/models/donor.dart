@@ -10,6 +10,7 @@ class Donor {
   final String? city;
   final int donorCount;
   final List<Donation>? donations;
+  final DateTime? created_at;
 
   Donor( {
     this.id,
@@ -21,6 +22,7 @@ class Donor {
     this.city,
     this.donations,
     this.donorCount =0,
+    this.created_at,
   });
 
   factory Donor.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class Donor {
       bloodGroup: json['bloodGroup'],
       phone: json['phone'],
       city: json['city'],
+
     );
   }
 

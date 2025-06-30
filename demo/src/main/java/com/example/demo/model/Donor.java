@@ -1,8 +1,6 @@
 package com.example.demo.model;
 
-import java.time.LocalDate;
-
-import jakarta.persistence.Entity;
+import jakarta.persistence.Entity;  // Changed from Date to LocalDateTime
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,5 +24,5 @@ public class Donor {
     private String bloodGroup;  
     private String phone;        
     private String city;       
-    private LocalDate lastDonation; 
+
 }

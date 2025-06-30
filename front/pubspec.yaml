@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^1.4.0
   liquid_pull_to_refresh: ^3.0.0
+  device_preview: ^1.2.0
 
 
 dev_dependencies:

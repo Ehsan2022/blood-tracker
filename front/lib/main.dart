@@ -1,13 +1,18 @@
 import 'package:class_project/screens/donor_info.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:class_project/screens/about.dart';
 import 'package:class_project/screens/donor_form.dart';
 import 'package:class_project/screens/donor_list.dart';
 import 'app_theme.dart';
 
-void main() {
-  runApp(const LifeBloodApp());
-}
+void main() => runApp(
+  DevicePreview(
+    enabled: !kReleaseMode,
+    builder: (context) => LifeBloodApp(),
+  ),
+);
 
 class LifeBloodApp extends StatelessWidget {
   const LifeBloodApp({super.key});
@@ -15,6 +20,9 @@ class LifeBloodApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+       useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       title: 'LifeBlood',
       theme: appTheme.copyWith(
         cardTheme: appTheme.cardTheme.copyWith(
@@ -97,7 +105,7 @@ Widget _buildAnimatedNavBar(int index) {
     alignment: Alignment.bottomCenter,
     clipBehavior: Clip.none,
     children: [
-      // The red semicircle bottom navigation bar
+      // The red bottom navigation bar
       Container(
         width: MediaQuery.of(context).size.width * 0.60,
         height: 130,

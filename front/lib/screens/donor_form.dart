@@ -29,7 +29,7 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.donor?.name ?? '');
-    _ageController = TextEditingController(text: widget.donor?.age?.toString() ?? '');
+    _ageController = TextEditingController(text: widget.donor?.age.toString() ?? '');
     _selectedGender = widget.donor?.gender ?? _genders.first;
     _selectedBloodGroup = widget.donor?.bloodGroup ?? _bloodGroups.first;
     _phoneController = TextEditingController(text: widget.donor?.phone ?? '');
@@ -190,30 +190,6 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
                       prefixIcon: Icon(Icons.location_city, color: Colors.red.shade700),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  InkWell(
-                    onTap: () => _selectDate(context),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        labelText: 'Last Donation Date',
-                        prefixIcon: Icon(Icons.calendar_today, color: Colors.red.shade700),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _lastDonation != null
-                                ? '${_lastDonation!.day}/${_lastDonation!.month}/${_lastDonation!.year}'
-                                : 'Select date',
-                          ),
-                          Icon(Icons.calendar_month, color: Colors.red.shade700),
-                        ],
                       ),
                     ),
                   ),

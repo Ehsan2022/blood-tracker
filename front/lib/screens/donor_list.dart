@@ -19,8 +19,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
   List<Donor> _filteredDonors = [];
   final TextEditingController _searchController = TextEditingController();
   
-  // Added for donation count
-  late Future<List<Donation>> _donationsFuture;
+  // donation count
   List<Donation> _allDonations = [];
 
   @override
@@ -41,7 +40,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
     });
   }
 
-  // Added for donation count
+  // donation count
   Future<void> _loadDonations() async {
     try {
       final donations = await ApiService.fetchDonations();
