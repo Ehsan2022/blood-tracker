@@ -29,9 +29,10 @@ class _DonorListScreenState extends State<DonorListScreen> {
   Future<void> _loadDonors() async {
     setState(() {
       _donorsFuture = ApiService.fetchDonors().then((donors) {
-        _allDonors = donors;
-        _filteredDonors = donors;
-        return donors.reversed.toList(); // Reverse the list to show latest donors first
+        final reversedDonors = donors.reversed.toList(); // Show latest donors first
+        _allDonors = reversedDonors;
+        _filteredDonors = reversedDonors;
+        return reversedDonors;
       }).catchError((error) {
         print('Error loading donors: $error');
         return [];

@@ -38,37 +38,46 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).colorScheme.primary,
-              onPrimary: Colors.white,
-              surface: Theme.of(context).cardColor,
-            ),
-            dialogBackgroundColor: Theme.of(context).cardColor,
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: selectedDate ?? DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime.now(),
+    builder: (BuildContext context, Widget? child) {
+      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+      
+      return Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: isDarkMode 
+            ? ColorScheme.dark(
+                primary: Theme.of(context).colorScheme.primary,
+                onPrimary: Colors.white,
+                surface: Theme.of(context).cardColor,
+                onSurface: Colors.white, // This controls the text color
+              )
+            : ColorScheme.light(
+                primary: Theme.of(context).colorScheme.primary,
+                onPrimary: Colors.white,
+                surface: Theme.of(context).cardColor,
               ),
+          dialogBackgroundColor: Theme.of(context).cardColor,
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.primary,
             ),
           ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        _dateController.text = _formatDate(picked);
-      });
-    }
+        ),
+        child: child!,
+      );
+    },
+  );
+  if (picked != null && picked != selectedDate) {
+    setState(() {
+      selectedDate = picked;
+      _dateController.text = _formatDate(picked);
+    });
   }
+}
 
   void save() async {
     if (_formKey.currentState!.validate()) {
