@@ -177,6 +177,7 @@ Future<void> _deleteDonor() async {
     return Card(
       margin: const EdgeInsets.all(16),
       elevation: 4,
+      color: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -311,6 +312,7 @@ Future<void> _deleteDonor() async {
 }
  Widget _buildDonationItem(Donation donation) {
   return Card(
+    color: Theme.of(context).cardColor,
     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: ListTile(
       leading: const Icon(Icons.bloodtype, color: Colors.red),
