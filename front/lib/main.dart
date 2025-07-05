@@ -87,6 +87,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
   @override
   Widget build(BuildContext context) {
+      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Stack(
       children: [
         Scaffold(
@@ -103,12 +104,12 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           bottom: 5,
           child: FloatingActionButton(
             onPressed: () => _navigateToDonorForm(context),
-            backgroundColor: Colors.white,
+            backgroundColor: isDarkMode ? const Color.fromARGB(255, 40, 39, 39).withOpacity(0.2) : Colors.white,
             elevation: 6,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50),
             ),
-            child: const Icon(Icons.add, color: Colors.red, size: 32),
+            child:  Icon(Icons.add, color:isDarkMode ? Colors.white:Colors.red , size: 32),
           ),
         ),
       ],
@@ -177,29 +178,35 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, int index) {
-    final isSelected = _currentIndex == index;
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isSelected ? Colors.white.withOpacity(0.8) : Colors.white.withOpacity(0.1),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.red : Colors.white.withOpacity(0.8),
-              size: 30,
-            ),
-          ],
-        ),
+ Widget _buildNavItem(IconData icon, int index) {
+  final isSelected = _currentIndex == index;
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  
+  return GestureDetector(
+    onTap: () => setState(() => _currentIndex = index),
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isSelected 
+          ? (isDarkMode ? const Color.fromARGB(255, 40, 39, 39).withOpacity(0.2) : Colors.white.withOpacity(0.5))
+          : (isDarkMode ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.1)),
       ),
-    );
-  }
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isSelected 
+              ? Colors.white // Keep white for selected state in both modes
+              : (isDarkMode ? Colors.white.withOpacity(0.7) : Colors.white.withOpacity(0.8)),
+            size: isSelected ? 36 : 30,
+          ),
+        ],
+      ),
+    ),
+  );
+}
 }

@@ -119,10 +119,10 @@ class _DonorListScreenState extends State<DonorListScreen> {
                   children: [
                     Text(
                       donor.name,
-                      style: const TextStyle(
+                      style:  TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.titleLarge!.color,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -134,7 +134,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
                         const SizedBox(width: 4),
                         Text(
                           '${donor.age} ${AppLocalizations.of(context)!.years}',
-                          style: const TextStyle(color: Colors.white70),
+                          style:  TextStyle(color: Theme.of(context).textTheme.titleLarge!.color,),
                         ),
                       ],
                     ),
@@ -145,7 +145,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
                         const SizedBox(width: 4),
                         Text(
                           donor.city ?? 'Unknown',
-                          style: const TextStyle(color: Colors.white70),
+                          style:  TextStyle(color: Theme.of(context).textTheme.titleLarge!.color,),
                         ),
                       ],
                     ),
@@ -157,7 +157,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
                           const SizedBox(width: 4),
                           Text(
                             donor.phone!,
-                            style: const TextStyle(color: Colors.white70),
+                            style:  TextStyle(color: Theme.of(context).textTheme.titleLarge!.color,),
                           ),
                         ],
                       ),
@@ -267,7 +267,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.donors,
@@ -291,7 +291,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.grey[800],
+                fillColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
                 prefixIcon: const Icon(Icons.search, color: Colors.red),
                 hintText: AppLocalizations.of(context)!.searchHint,
                 hintStyle: const TextStyle(color: Colors.white54),
