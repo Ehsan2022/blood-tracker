@@ -61,6 +61,7 @@ class _DonorFormScreenState extends State<DonorFormScreen> {
           key: _formKey,
           child: Card(
             elevation: 4,
+            color: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),

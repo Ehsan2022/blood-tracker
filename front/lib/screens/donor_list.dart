@@ -31,7 +31,10 @@ class _DonorListScreenState extends State<DonorListScreen> {
       _donorsFuture = ApiService.fetchDonors().then((donors) {
         _allDonors = donors;
         _filteredDonors = donors;
-        return donors;
+        return donors.reversed.toList(); // Reverse the list to show latest donors first
+      }).catchError((error) {
+        print('Error loading donors: $error');
+        return [];
       });
     });
   }
