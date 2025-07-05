@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:life_blood_donor/locale_provider.dart';
 import 'package:life_blood_donor/screens/about.dart';
@@ -9,6 +9,7 @@ import 'package:life_blood_donor/screens/donor_info.dart';
 import 'package:life_blood_donor/screens/donor_list.dart';
 import 'package:life_blood_donor/screens/settings.dart';
 import 'package:life_blood_donor/screens/stats.dart';
+import 'package:life_blood_donor/theme_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'app_theme.dart';
@@ -17,13 +18,20 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   final localeProvider = LocaleProvider();
-  await localeProvider.loadLocale();
+  final themeProvider = ThemeProvider();
+  await Future.wait([
+    localeProvider.loadLocale(),
+    themeProvider.loadTheme(),
+  ]);
 
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,
-      builder: (context) => ChangeNotifierProvider(
-        create: (context) => localeProvider,
+      builder: (context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => localeProvider),
+          ChangeNotifierProvider(create: (_) => themeProvider),
+        ],
         child: const LifeBloodApp(),
       ),
     ),
@@ -34,13 +42,14 @@ class LifeBloodApp extends StatelessWidget {
   const LifeBloodApp({super.key});
 
   @override
- Widget build(BuildContext context) {
-    return Consumer<LocaleProvider>(
-      builder: (context, localeProvider, child) {
+  Widget build(BuildContext context) {
+    return Consumer2<LocaleProvider, ThemeProvider>(
+      builder: (context, localeProvider, themeProvider, child) {
         return MaterialApp(
-          // locale: DevicePreview.locale(context) ?? localeProvider.locale,
-          // locale: Locale('fa'),
           locale: localeProvider.locale,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: themeProvider.themeMode,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -48,17 +57,7 @@ class LifeBloodApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          
           title: 'LifeBlood',
-          theme: appTheme.copyWith(
-            cardTheme: appTheme.cardTheme.copyWith(
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
           debugShowCheckedModeBanner: false,
           home: const MainNavigationWrapper(),
         );

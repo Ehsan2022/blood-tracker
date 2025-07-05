@@ -29,7 +29,7 @@ class DonorInfoScreen extends StatelessWidget {
               tag: 'donor-info-icon',
               child: CircleAvatar(
                 radius: 60,
-                backgroundColor: Colors.red.shade50,
+                backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 child: const Icon(Icons.health_and_safety, size: 60, color: Colors.red),
               ),
             ),

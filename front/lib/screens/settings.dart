@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:life_blood_donor/locale_provider.dart';
+import 'package:life_blood_donor/theme_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart' show Share;
-class SettingsScreen extends StatefulWidget {
+import 'package:share_plus/share_plus.dart';
+
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isDarkMode = false;
-
-  @override
   Widget build(BuildContext context) {
-    final localeProvider = Provider.of<LocaleProvider>(context, listen: true);
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final localeProvider = Provider.of<LocaleProvider>(context);
     final localizations = AppLocalizations.of(context)!;
     final isEnglish = localeProvider.locale.languageCode == 'en';
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: Text(localizations.settings),
         flexibleSpace: Container(
@@ -37,18 +32,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Added Hero icon section
             Padding(
-              padding: const EdgeInsets.only(top: 20),
+              padding: const EdgeInsets.only(top: 20.0),
               child: Hero(
                 tag: 'settings-icon',
                 child: CircleAvatar(
                   radius: 60,
-                  backgroundColor: Colors.red.shade50,
+                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   child: Icon(
                     Icons.settings,
                     size: 60,
-                    color: Colors.red,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -56,10 +50,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 20),
             Text(
               localizations.settings,
-              style: TextStyle(
-                fontSize: 24,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
-                color: Colors.red.shade700,
               ),
             ),
             const SizedBox(height: 30),
@@ -68,22 +61,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 children: [
                   _buildSettingItem(
+                    context,
                     icon: Icons.share,
                     title: localizations.shareApp,
                     onTap: () => _shareApp(context),
                   ),
-                  _buildDivider(),
+                  _buildDivider(context),
                   _buildSettingItem(
+                    context,
                     icon: Icons.brightness_6,
                     title: localizations.darkMode,
                     trailing: Switch(
-                      value: _isDarkMode,
-                      onChanged: (value) => setState(() => _isDarkMode = value),
-                      activeColor: Colors.red,
+                      value: themeProvider.themeMode == ThemeMode.dark,
+                      onChanged: (value) {
+                        themeProvider.setTheme(
+                          value ? ThemeMode.dark : ThemeMode.light);
+                      },
+                      activeColor: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  _buildDivider(),
+                  _buildDivider(context),
                   _buildSettingItem(
+                    context,
                     icon: Icons.language,
                     title: localizations.language,
                     trailing: Switch(
@@ -91,18 +90,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (value) async {
                         await localeProvider.toggleLanguage();
                       },
-                      activeColor: Colors.red,
+                      activeColor: Theme.of(context).colorScheme.primary,
                     ),
                     subtitle: Text(
                       isEnglish ? 'English' : 'فارسی',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
                       ),
                     ),
                   ),
-                  _buildDivider(),
+                  _buildDivider(context),
                   _buildSettingItem(
+                    context,
                     icon: Icons.exit_to_app,
                     title: localizations.exitApp,
                     onTap: () => _exitApp(context),
@@ -117,8 +116,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // Rest of your existing methods (_buildSettingItem, _buildDivider, etc.) remain the same
-  Widget _buildSettingItem({
+  Widget _buildSettingItem(
+    BuildContext context, {
     required IconData icon,
     required String title,
     Widget? trailing,
@@ -126,14 +125,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Widget? subtitle,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.red.shade700),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.grey.shade800,
-        ),
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
       subtitle: subtitle,
       trailing: trailing,
@@ -141,16 +136,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildDivider(BuildContext context) {
     return Divider(
       height: 1,
       thickness: 1,
-      color: Colors.grey.shade300,
+      color: Theme.of(context).dividerColor,
       indent: 16,
       endIndent: 16,
     );
   }
-
 
   Future<void> _shareApp(BuildContext context) async {
     final localizations = AppLocalizations.of(context)!;
@@ -179,7 +173,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () => SystemNavigator.pop(),
             child: Text(
               localizations.exitApp,
-              style: const TextStyle(color: Colors.red),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         ],

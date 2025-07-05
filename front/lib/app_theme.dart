@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-final appTheme = ThemeData(
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.red,
+final ThemeData lightTheme = ThemeData(
+  colorScheme: ColorScheme.light(
     primary: Colors.red.shade700,
     secondary: Colors.red.shade400,
+    background: Colors.grey.shade50,
   ),
   useMaterial3: true,
+  brightness: Brightness.light,
+  scaffoldBackgroundColor: Colors.grey.shade50,
   appBarTheme: AppBarTheme(
     centerTitle: true,
     elevation: 0,
@@ -19,6 +21,7 @@ final appTheme = ThemeData(
   ),
   cardTheme: CardTheme(
     elevation: 2,
+    color: Colors.white,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
@@ -33,51 +36,50 @@ final appTheme = ThemeData(
     fillColor: Colors.grey.withOpacity(0.1),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
   ),
+  dividerTheme: DividerThemeData(
+    color: Colors.grey.shade300,
+    thickness: 1,
+  ),
 );
 
-// Text styles
-class AppTextStyles {
-  static const headlineLarge = TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: Colors.black87,
-  );
-
-  static const headlineMedium = TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
-    color: Colors.black87,
-  );
-
-  static const bodyLarge = TextStyle(
-    fontSize: 16,
-    color: Colors.black87,
-  );
-
-  static const bodyMedium = TextStyle(
-    fontSize: 14,
-    color: Colors.black54,
-  );
-}
-
-// Custom card widget
-class ModernCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets? padding;
-  
-  const ModernCard({super.key, required this.child, this.padding});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: padding ?? const EdgeInsets.all(16),
-        child: child,
-      ),
-    );
-  }
-}
+final ThemeData darkTheme = ThemeData(
+  colorScheme: ColorScheme.dark(
+    primary: Colors.red.shade700,
+    secondary: Colors.red.shade400,
+    background: Colors.grey.shade900,
+  ),
+  useMaterial3: true,
+  brightness: Brightness.dark,
+  scaffoldBackgroundColor: Colors.grey.shade900,
+  appBarTheme: AppBarTheme(
+    centerTitle: true,
+    elevation: 0,
+    titleTextStyle: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Colors.grey.shade50,
+    ),
+    iconTheme: IconThemeData(color: Colors.grey.shade50),
+  ),
+  cardTheme: CardTheme(
+    elevation: 2,
+    color: Colors.grey.shade800,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    margin: const EdgeInsets.all(8),
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide.none,
+    ),
+    filled: true,
+    fillColor: Colors.grey.withOpacity(0.2),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+  ),
+  dividerTheme: DividerThemeData(
+    color: Colors.grey.shade700,
+    thickness: 1,
+  ),
+);
