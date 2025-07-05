@@ -48,7 +48,7 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.statistics),
         centerTitle: true,
@@ -95,6 +95,7 @@ class _StatsScreenState extends State<StatsScreen> {
               children: [
                 Card(
                   elevation: 8,
+                  color: Theme.of(context).cardColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -138,6 +139,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: 16),
                 Card(
                   elevation: 8,
+                  color: Theme.of(context).cardColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -197,6 +199,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: 16),
                 Card(
                   elevation: 8,
+                  color: Theme.of(context).cardColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
