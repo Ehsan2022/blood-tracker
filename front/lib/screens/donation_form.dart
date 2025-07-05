@@ -27,7 +27,6 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
     units = d?.units ?? 1;
     notes = d?.notes ?? '';
     
-    // Initialize date if editing existing donation
     if (d?.date != null) {
       selectedDate = DateTime.tryParse(d!.date!);
       _dateController.text = _formatDate(selectedDate!);
@@ -46,12 +45,18 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
       lastDate: DateTime.now(),
       builder: (BuildContext context, Widget? child) {
         return Theme(
-          data: ThemeData.light().copyWith(
+          data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.red.shade700,
+              primary: Theme.of(context).colorScheme.primary,
               onPrimary: Colors.white,
+              surface: Theme.of(context).cardColor,
             ),
-            dialogBackgroundColor: Colors.white,
+            dialogBackgroundColor: Theme.of(context).cardColor,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
+            ),
           ),
           child: child!,
         );
@@ -69,7 +74,7 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
     if (_formKey.currentState!.validate()) {
       if (selectedDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a date')),
+          SnackBar(content: Text('Please select a date')),
         );
         return;
       }
@@ -101,6 +106,7 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(widget.donation == null ? 'Add Donation' : 'Edit Donation'),
         centerTitle: true,
@@ -125,6 +131,7 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
+                color: Theme.of(context).cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -132,16 +139,39 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
                       TextFormField(
                         controller: _dateController,
                         readOnly: true,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Donation Date',
-                          prefixIcon: Icon(Icons.calendar_today, color: Colors.red.shade700),
+                          labelStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.6),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.calendar_today,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
                           ),
                           suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_month, color: Colors.red.shade700),
+                            icon: Icon(
+                              Icons.calendar_month,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                             onPressed: () => _selectDate(context),
                           ),
+                          filled: true,
+                          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -154,12 +184,32 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: hospital,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Hospital',
-                          prefixIcon: Icon(Icons.local_hospital, color: Colors.red.shade700),
+                          labelStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.6),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.local_hospital,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                         ),
                         onChanged: (v) => hospital = v,
                         validator: (value) {
@@ -172,12 +222,32 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: units.toString(),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Units',
-                          prefixIcon: Icon(Icons.bloodtype, color: Colors.red.shade700),
+                          labelStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.6),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.bloodtype,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                         ),
                         keyboardType: TextInputType.number,
                         onChanged: (v) => units = int.parse(v),
@@ -194,12 +264,32 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: notes,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Notes',
-                          prefixIcon: Icon(Icons.note, color: Colors.red.shade700),
+                          labelStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.6),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.note,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                         ),
                         maxLines: 3,
                         onChanged: (v) => notes = v,
@@ -210,7 +300,7 @@ class _DonationFormScreenState extends State<DonationFormScreen> {
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red.shade700,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
