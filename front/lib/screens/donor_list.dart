@@ -26,12 +26,6 @@ class _DonorListScreenState extends State<DonorListScreen> {
     _searchController.addListener(_filterDonors);
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   Future<void> _loadDonors() async {
     setState(() {
       _donorsFuture = ApiService.fetchDonors().then((donors) {
@@ -48,7 +42,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
       _filteredDonors = _allDonors.where((donor) {
         return donor.name.toLowerCase().contains(query) ||
             (donor.bloodGroup.toLowerCase().contains(query)) ||
-            (donor.phone?.toLowerCase().contains(query) ?? false) ||
+            (donor.phone!.contains(query)) ||
             (donor.city?.toLowerCase().contains(query) ?? false);
       }).toList();
     });
@@ -73,8 +67,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
 
   Widget _buildDonorCard(Donor donor) {
     return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 10,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -90,8 +83,8 @@ class _DonorListScreenState extends State<DonorListScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    Colors.red[900]!.withOpacity(0.2),
+                    Colors.red[700]!.withOpacity(0.4),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -105,7 +98,7 @@ class _DonorListScreenState extends State<DonorListScreen> {
                 padding: const EdgeInsets.all(18.0),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Colors.red[700],
                   child: Text(
                     donor.bloodGroup,
                     style: const TextStyle(
@@ -119,46 +112,40 @@ class _DonorListScreenState extends State<DonorListScreen> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       donor.name,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(
-                          Icons.cake, 
-                          size: 16, 
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        Icon(Icons.cake, size: 16, color: Colors.red[400]),
                         const SizedBox(width: 4),
                         Text(
                           '${donor.age} ${AppLocalizations.of(context)!.years}',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: const TextStyle(color: Colors.white70),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(
-                          Icons.place, 
-                          size: 16, 
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        Icon(Icons.place, size: 16, color: Colors.red[400]),
                         const SizedBox(width: 4),
                         Text(
-                          donor.city ?? "Unknown",
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          donor.city ?? 'Unknown',
+                          style: const TextStyle(color: Colors.white70),
                         ),
                       ],
                     ),
@@ -166,15 +153,11 @@ class _DonorListScreenState extends State<DonorListScreen> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(
-                            Icons.phone, 
-                            size: 16, 
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                          Icon(Icons.phone, size: 16, color: Colors.red[400]),
                           const SizedBox(width: 4),
                           Text(
                             donor.phone!,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: const TextStyle(color: Colors.white70),
                           ),
                         ],
                       ),
@@ -194,28 +177,27 @@ class _DonorListScreenState extends State<DonorListScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline, 
-            size: 48, 
-            color: Theme.of(context).colorScheme.error,
-          ),
+          Icon(Icons.error_outline, size: 48, color: Colors.red[400]),
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.failedToLoadDonors,
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: _loadDonors,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Colors.red[700],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text(
-              AppLocalizations.of(context)!.retry,
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            child: const Text(
+              'Retry',
+              style: TextStyle(color: Colors.white),
             ),
           ),
         ],
@@ -231,21 +213,24 @@ class _DonorListScreenState extends State<DonorListScreen> {
           Icon(
             Icons.people_outline,
             size: 48,
-            color: Theme.of(context).disabledColor,
+            color: Colors.grey[600],
           ),
           const SizedBox(height: 16),
           Text(
             _searchController.text.isEmpty
                 ? AppLocalizations.of(context)!.noDonorsFound
                 : AppLocalizations.of(context)!.noMatchingDonors,
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             _searchController.text.isEmpty
                 ? AppLocalizations.of(context)!.addFirstDonor
                 : AppLocalizations.of(context)!.tryDifferentSearch,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: const TextStyle(color: Colors.white70),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -259,16 +244,16 @@ class _DonorListScreenState extends State<DonorListScreen> {
               await _loadDonors();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Colors.red[700],
               padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 22),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text(
-              AppLocalizations.of(context)!.addDonor,
+            child: const Text(
+              'Add Donor',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -282,36 +267,34 @@ class _DonorListScreenState extends State<DonorListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.donors),
+        title: Text(
+          AppLocalizations.of(context)!.donors,
+          style: const TextStyle(color: Colors.white),
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.red.shade900, Colors.red.shade700],
+              colors: [Colors.red[900]!, Colors.red[700]!],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
+          preferredSize: const Size.fromHeight(0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: TextField(
               controller: _searchController,
-              style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Theme.of(context).inputDecorationTheme.fillColor,
-                prefixIcon: Icon(
-                  Icons.search, 
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                fillColor: Colors.grey[800],
+                prefixIcon: const Icon(Icons.search, color: Colors.red),
                 hintText: AppLocalizations.of(context)!.searchHint,
-                hintStyle: TextStyle(
-                  color: Theme.of(context).hintColor,
-                ),
+                hintStyle: const TextStyle(color: Colors.white54),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -324,18 +307,18 @@ class _DonorListScreenState extends State<DonorListScreen> {
       ),
       body: LiquidPullToRefresh(
         onRefresh: _handleRefresh,
-        color: Theme.of(context).colorScheme.primary,
+        color: Colors.red[700],
         height: 150,
-        backgroundColor: Theme.of(context).cardColor,
+        backgroundColor: Colors.grey[800],
         animSpeedFactor: 2,
         showChildOpacityTransition: false,
         child: FutureBuilder<List<Donor>>(
           future: _donorsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.primary,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                 ),
               );
             }
@@ -345,11 +328,18 @@ class _DonorListScreenState extends State<DonorListScreen> {
             if (!snapshot.hasData || _filteredDonors.isEmpty) {
               return _buildEmptyState();
             }
-            return ListView.builder(
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 1,
+                mainAxisExtent: 160,
+              ),
               itemCount: _filteredDonors.length,
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: 150),
               itemBuilder: (context, index) {
-                return _buildDonorCard(_filteredDonors[index]);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: _buildDonorCard(_filteredDonors[index]),
+                );
               },
             );
           },
